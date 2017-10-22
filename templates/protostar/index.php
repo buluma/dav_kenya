@@ -48,6 +48,7 @@ JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true
 
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'bootstrap.min.css', array('version' => 'auto', 'relative' => true));
 
 // Use of Google Font
 if ($this->params->get('googleFont'))
@@ -140,39 +141,54 @@ else
 	. ($params->get('fluidContainer') ? ' fluid' : '');
 	echo ($this->direction === 'rtl' ? ' rtl' : '');
 ?>">
-	<!-- Body -->
-	<div class="body" id="top">
-		<div class="container<?php echo ($params->get('fluidContainer') ? '-fluid' : ''); ?>">
-			<!-- Header -->
-			<header class="header" role="banner">
-				<div class="header-inner clearfix">
+
+	<!-- HeaderTop -->
+	<header>
+		<div class="row TopHeader">
+			<div class="row">
+				<div class="logo col-md-offset-1">
 					<a class="brand pull-left" href="<?php echo $this->baseurl; ?>/">
 						<?php echo $logo; ?>
-						<?php if ($this->params->get('sitedescription')) : ?>
-							<?php echo '<div class="site-description">' . htmlspecialchars($this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8') . '</div>'; ?>
-						<?php endif; ?>
 					</a>
-					<div class="header-search pull-right">
-						<jdoc:include type="modules" name="position-0" style="none" />
+				</div>
+				<div class="green">
+					<div class="col-md-5">
+						<a href="." class="siteTitle"><?php echo $sitename; ?></a> <span class="dreams">"<?php echo htmlspecialchars($this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8'); ?>"</span>
+					</div>
+					<div class="col-md-5">
+						<div class="thisRight"><a href="#"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp; customercare@davkenya.co.ke</a> &nbsp; | &nbsp; <a href="#"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;  0714 970 635 / 0711 682 714</a></div>
+					</div>
+
+					<div class="mainNav">
+						<?php if ($this->countModules('position-1')) : ?>
+										<nav class="navigation" role="navigation">
+											<div class="navbar pull-left">
+												<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+													<span class="element-invisible"><?php echo JTEXT::_('TPL_PROTOSTAR_TOGGLE_MENU'); ?></span>
+													<span class="icon-bar"></span>
+													<span class="icon-bar"></span>
+													<span class="icon-bar"></span>
+												</a>
+											</div>
+											<div class="nav-collapse">
+												<jdoc:include type="modules" name="position-1" style="none" />
+											</div>
+										</nav>
+									<?php endif; ?>
 					</div>
 				</div>
-			</header>
-			<?php if ($this->countModules('position-1')) : ?>
-				<nav class="navigation" role="navigation">
-					<div class="navbar pull-left">
-						<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="element-invisible"><?php echo JTEXT::_('TPL_PROTOSTAR_TOGGLE_MENU'); ?></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-					</div>
-					<div class="nav-collapse">
-						<jdoc:include type="modules" name="position-1" style="none" />
-					</div>
-				</nav>
-			<?php endif; ?>
-			<jdoc:include type="modules" name="banner" style="xhtml" />
+			</div>
+			
+		</div>		
+	</header>
+	<!-- HeaderTopEnd -->
+	<!-- BannerEnd -->
+	<!-- Body -->
+	<div class="body" id="top">
+
+		<div class="row">
+			
+			<!-- <jdoc:include type="modules" name="banner" style="xhtml" /> -->
 			<div class="row-fluid">
 				<?php if ($position8ModuleCount) : ?>
 					<!-- Begin Sidebar -->
@@ -203,8 +219,7 @@ else
 	</div>
 	<!-- Footer -->
 	<footer class="footer" role="contentinfo">
-		<div class="container<?php echo ($params->get('fluidContainer') ? '-fluid' : ''); ?>">
-			<hr />
+		<div class="item-page">
 			<jdoc:include type="modules" name="footer" style="none" />
 			<p class="pull-right">
 				<a href="#top" id="back-top">
@@ -212,7 +227,7 @@ else
 				</a>
 			</p>
 			<p>
-				&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
+				Copyright &copy; <?php echo date('Y'); ?> <?php echo $sitename; ?> | Built by <?php echo $sitename; ?> Talent
 			</p>
 		</div>
 	</footer>
