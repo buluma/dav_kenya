@@ -156,7 +156,7 @@ else
 						<a href="." class="siteTitle"><?php echo $sitename; ?></a> <span class="dreams">"<?php echo htmlspecialchars($this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8'); ?>"</span>
 					</div>
 					<div class="col-md-5">
-						<div class="thisRight"><a href="#"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp; customercare@davkenya.co.ke</a> &nbsp; | &nbsp; <a href="#"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;  0714 970 635 / 0711 682 714</a></div>
+						<div class="thisRight"><a href="mailto:customercare@davkenya.co.ke"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp; customercare@davkenya.co.ke</a> &nbsp; | &nbsp; <a href="#"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;  0714 970 635 / 0711 682 714</a></div>
 					</div>
 
 					<div class="mainNav">

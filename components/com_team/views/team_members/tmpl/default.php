@@ -13,6 +13,9 @@ defined('_JEXEC') or die;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
+<div class="contact">
+        <h1 itemprop="name" class="content-body__h1">The Team</h1>
+      
 
 <div class="Section Section--employees">
     <div class="column--primary">
@@ -23,6 +26,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
         
         <div class="content-body__team">
             <div class="content">
+              <h2 class="">Meet the DAV Kenya Team</h2>
+              <br/>
                 <div class="team-list js-team-list">
                     <div class="item-page">
                         <ul>
@@ -30,7 +35,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                           // var_dump($item);
                           ?>
                               <li data-toggle="modal" data-target="#bannerformmodal-<?php echo $item->id;?>" class="" >
-                                <div class="pane-list large-3 columns js-bd-pane">
+                                <div class="pane-list large-4 columns js-bd-pane">
                                     <div class="tema-list__item pane-block" style="">
                                         <div class="content">
                                             <div class="pane-block__image">
@@ -116,6 +121,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
             </div>
         </div>
     </div>
+</div>
 </div>
 </div>
 </div>

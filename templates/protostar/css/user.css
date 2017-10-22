@@ -182,10 +182,8 @@ li.sp-contact-email a, li.sp-contact-phone a{
     border-radius: 2px;
 }
 
-
-
 .content-body__team .pane-block__image {
-    height: 245px;
+    height: 325px;
 }
 
 .content-body__team .tema-list__item {
@@ -194,7 +192,7 @@ li.sp-contact-email a, li.sp-contact-phone a{
 
 .content-body__team .image-pane {
     width: auto;
-    max-width: 86%;
+    max-width: 100%;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -378,7 +376,7 @@ ul.nav.menu{
 }
 
 .blog {
-    width: 87%;
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -443,4 +441,13 @@ textarea#jform_contact_message.required.form-control {
     color: #3e4757;
     line-height: 22px;
     margin: 0 !important;
+}
+
+.contact .content-body__h1 {
+    font-size: 28px;
+    color: #219a3f;
+    line-height: 1.125;
+    border-bottom: 1px solid #219a3f;
+    padding-bottom: 10px;
+    margin: 15px 0;
 }
