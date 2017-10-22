@@ -3,6 +3,7 @@
 /**
  * @copyright	Copyright (C) 2011 Cedric KEIFLIN alias ced1870
  * http://www.joomlack.fr
+ * Module Maximenu CK
  * @license		GNU/GPL
  * */
 // no direct access
@@ -13,8 +14,8 @@ class JFormFieldCkcolor extends JFormField {
     protected $type = 'ckcolor';
 
     protected function getInput() {
-        $path = 'modules/mod_maximenuck/elements/jscolor/';
-        JHTML::_('script', 'jscolor.js', $path);
+        $path = 'modules/mod_slideshowck/elements/jscolor/';
+        JHTML::_('script', $path.'jscolor.js');
 
         $html = '<img src="' . $this->getPathToImages() . '/images/color.png" /><input class="color {';
         $html.= 'required:false,';  // empty possible
@@ -40,13 +41,13 @@ class JFormFieldCkcolor extends JFormField {
         $text = JText::_($text);
 
         // Build the class for the label.
-        $class = !empty($this->description) ? 'hasTip' : '';
+        $class = !empty($this->description) ? 'hasTip hasTooltip' : '';
 
         $label .= '<label id="' . $this->id . '-lbl" for="' . $this->id . '" class="' . $class . '"';
 
         // If a description is specified, use it to build a tooltip.
         if (!empty($this->description)) {
-            $label .= ' title="' . htmlspecialchars(trim($text, ':') . '::' .
+            $label .= ' title="' . htmlspecialchars(trim($text, ':') . '<br />' .
                             JText::_($this->description), ENT_COMPAT, 'UTF-8') . '"';
         }
 

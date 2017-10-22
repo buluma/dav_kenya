@@ -94,6 +94,8 @@ class JFormFieldSYWFontPicker extends JFormField
 		$lang = JFactory::getLanguage();
 		$lang->load('lib_syw.sys', JPATH_SITE);
 		
+		JHtml::_('bootstrap.tooltip');
+		
 		JHtml::_('stylesheet', 'syw/fonts-min.css', false, true);		
 
 		$script = 'jQuery(document).ready(function () {';

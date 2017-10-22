@@ -13,6 +13,7 @@ require_once $com_path . 'router.php';
 require_once $com_path . 'helpers/route.php';
 JModelLegacy::addIncludePath($com_path . '/models', 'ContentModel');
 jimport('joomla.filesystem.folder');
+jimport('joomla.filesystem.file');
 
 class modSlideshowckHelper {
 
@@ -37,6 +38,30 @@ class modSlideshowckHelper {
 			if (!$item->imgname) {
 				unset($items[$i]);
 				continue;
+			}
+
+			// check if the slide is published
+			if (isset($item->state) && $item->state == '0') {
+				unset($items[$i]);
+				continue;
+			}
+
+			// check the slide start date
+			if (isset($item->startdate) && $item->startdate) {
+				// if (date("d M Y") < $item->startdate) {
+				if (time() < strtotime($item->startdate)) {
+					unset($items[$i]);
+					continue;
+				}
+			}
+
+			// check the slide end date
+			if (isset($item->enddate) && $item->enddate) {
+				// if (date("d M Y") > $item->enddate) {
+				if (time() > strtotime($item->enddate)) {
+					unset($items[$i]);
+					continue;
+				}
 			}
 
 			if (isset($item->slidearticleid) && $item->slidearticleid) {
@@ -88,7 +113,7 @@ class modSlideshowckHelper {
 			
 			if (!isset($item->imgtitle)) $item->imgtitle = '';
 		}
-		//shuffle($items);
+
 		return $items;
 	}
 
@@ -98,7 +123,7 @@ class modSlideshowckHelper {
 		$access = !JComponentHelper::getParams('com_content')->get('show_noauth');
 		$authorised = JAccess::getAuthorisedViewLevels(JFactory::getUser()->get('id'));
 		// Get an instance of the generic articles model
-		$articles = JModel::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
+		$articles = JModelLegacy::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
 		// Set application parameters in model
 		$app = JFactory::getApplication();
 		$appParams = $app->getParams();
@@ -142,7 +167,7 @@ class modSlideshowckHelper {
 		$authorisedExt = array('png', 'jpg', 'JPG', 'JPEG', 'jpeg', 'bmp', 'tiff', 'gif');
 		$items = json_decode(str_replace("|qq|", "\"", $params->get('slidesfromfolder')));
 		foreach ($items as & $item) {
-			// $item->imgname = str_replace(JUri::base(),'', $item->imgname);
+//			$item->imgname = str_replace(JUri::base(), '', $item->imgname);
 			$item->imgthumb = '';
 			$item->imgname = trim($item->imgname, '/');
 			$item->imgname = trim($item->imgname, '\\');
@@ -162,7 +187,7 @@ class modSlideshowckHelper {
 			$item->article = null;
 			$item->slidearticleid = null;
 			$item->imgalignment = null;
-			$item->imgtarget = null;
+			$item->imgtarget = 'default';
 			$item->imgtime = null;
 			$item->imglink = null;
 			$item->imgtitle = null;
@@ -211,7 +236,7 @@ class modSlideshowckHelper {
 			$item->article = null;
 			$item->slidearticleid = null;
 			$item->imgalignment = null;
-			$item->imgtarget = null;
+			$item->imgtarget = 'default';
 			$item->imgtime = null;
 			$item->imglink = null;
 			$item->imgtitle = null;
@@ -230,6 +255,91 @@ class modSlideshowckHelper {
 			} else {
 				$item->imglink = JRoute::_($item->imglink);
 			}
+		}
+
+		return $items;
+	}
+	
+	/**
+	 * Get a list of the items.
+	 *
+	 * @param	JRegistry	$params	The module options.
+	 *
+	 * @return	array
+	 */
+	static function getItemsAutoloadflickr(&$params) {
+		self::$slideshowparams = $params;
+
+		$url = 'https://api.flickr.com/services/rest/?format=json&method=flickr.photosets.getPhotos&extras=description,original_format,url_sq,url_t,url_s,url_m,url_o&nojsoncallback=1';
+		$url .= '&api_key=' . $params->get('flickr_apikey');
+		$url .= '&photoset_id=' . $params->get('flickr_photoset');
+
+		if (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {  
+			$result = file_get_contents($url);  
+		}
+		// look for curl
+		if ($result == '' && extension_loaded('curl')) {
+			$ch = curl_init();  
+			$timeout = 30;  
+			curl_setopt($ch, CURLOPT_URL, $url);  
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);  
+			$result = curl_exec($ch);  
+			curl_close($ch);  
+		}
+
+		$images = json_decode($result)->photoset->photo;
+		$items = Array();
+		$i = 0;
+		$flickrSuffixes = array('o', 'k', 'h', 'b', 'z');
+		foreach ($images as & $image) {
+			$items[$i] = new stdClass();
+			$item = $items[$i];
+			$suffix = 'o';
+			foreach ($flickrSuffixes as $flickrSuffixe) {
+				if (isset($image->{'url_' . $flickrSuffixe})) {
+					$suffix = $flickrSuffixe;
+					break;
+				}
+			}
+			$item->imgname = $image->{'url_' . $flickrSuffixe};
+			$item->imgthumb = $item->imgname;
+			// create new images for mobile
+			// if ($params->get('usemobileimage', '0')) { 
+				// self::resizeImage($item->imgname, $params->get('mobileimageresolution', '640'), '', $params->get('mobileimageresolution', '640'), '');
+			// }
+			// if ($params->get('thumbnails', '1') == '1')
+				// $item->imgthumb = JURI::base(true) . '/' . self::resizeImage($item->imgname, $params->get('thumbnailwidth', '100'), $params->get('thumbnailheight', '75'));
+			// $thumbext = explode(".", $item->imgname);
+			// $thumbext = end($thumbext);
+			// set the variables
+			$item->imgvideo = null;
+			$item->slideselect = null;
+			$item->slideselect = null;
+			$item->imgcaption = null;
+			$item->article = null;
+			$item->slidearticleid = null;
+			$item->imgalignment = null;
+			$item->imgtarget = 'default';
+			$item->imgtime = null;
+			$item->imglink = null;
+			$item->imgtitle = null;
+
+			// show the title and description of the image
+			if ($params->get('flickr_showcaption', '1')) {
+				$item->imgtitle = $image->title;
+				$item->imgcaption = $image->description->_content;
+			}
+
+			// set the link to the image
+			if ($params->get('flickr_autolink', '0')) {
+				$item->imglink = $image->{'url_' . $flickrSuffixe};
+			}
+
+			$i++;
 		}
 
 		return $items;
@@ -469,6 +579,10 @@ class modSlideshowckHelper {
 					$article_image = (isset($imgresult[2]) && $imgresult[2] != '') ? $imgresult[2] : false;
 					$slideItem_article_text = (isset($imgresult[2])) ? str_replace($imgresult[0], '', $item->introtext) : $item->introtext;
 					break;
+				case 'fullimage':
+					$article_image = (isset($item->images['image_fulltext']) && $item->images['image_fulltext']) ? $item->images['image_fulltext'] : false;
+					$slideItem_article_text = $item->introtext;
+					break;
 				case 'introimage':
 				default:
 					$article_image = (isset($item->images['image_intro']) && $item->images['image_intro']) ? $item->images['image_intro'] : false;
@@ -477,8 +591,7 @@ class modSlideshowckHelper {
 			}
 			
 			if ( $article_image
-					&& (count($slideItems) < (int) $params->get('count', 0) || (int) $params->get('count', 0) == 0)) {
-				
+					 && (count($slideItems) < (int) $params->get('count', 0) || (int) $params->get('count', 0) == 0)) {
 				$slideItem = new stdClass();
 				$slideItem->imgname = $article_image;
 //				$slideItem->imgname = trim(str_replace('\\', '/', $item->images['image_intro']), '/');
@@ -491,7 +604,7 @@ class modSlideshowckHelper {
 				$slideItem->article = new stdClass();
 				$slideItem->slidearticleid = null;
 				$slideItem->imgalignment = null;
-				$slideItem->imgtarget = null;
+				$slideItem->imgtarget = 'default';
 				$slideItem->imgtime = null;
 				$slideItem->imglink = null;
 				$slideItem->imgtitle = null;
@@ -513,7 +626,7 @@ class modSlideshowckHelper {
 		$item->imgcaption = null;
 		$item->article = null;
 		$item->imgalignment = null;
-		$item->imgtarget = null;
+		$item->imgtarget = 'default';
 		$item->imgtime = null;
 		$item->imglink = null;
 		// load the image data from txt
@@ -590,7 +703,7 @@ class modSlideshowckHelper {
 		$thumbext = end($thumbext);
 		$thumbfile = str_replace(JFile::getName($file), $thumbpath . "/" . JFile::getName($file), $file);
 		$thumbfile = str_replace("." . $thumbext, $thumbsuffix . "." . $thumbext, $thumbfile);
-
+		
 		$filetmp = JPATH_ROOT . '/' . $file;
 		$filetmp = str_replace("%20", " ", $filetmp);
 		if (!Jfile::exists($filetmp))
@@ -611,13 +724,13 @@ class modSlideshowckHelper {
 		
 		if ($size) {
 			if (JFile::exists($thumbfile)) {
-				$thumbsize = getimagesize(JPATH_ROOT . '/' . $thumbfile);
-				if ($thumbsize[0] == $x || $thumbsuffix == '') {
-					//echo 'miniature existante';
-					return $thumbfile;
-				}
+				return $thumbfile;
+				// $thumbsize = getimagesize(JPATH_ROOT . '/' . $thumbfile);
+				// if ($thumbsize[0] == $x || $thumbsuffix == '') {
+					// return $thumbfile;
+				// }
 			}
-
+			
 			$thumbfolder = str_replace(JFile::getName($file), $thumbpath . "/", $filetmp);
 			if (!JFolder::exists($thumbfolder)) { 
 				JFolder::create($thumbfolder);
@@ -668,15 +781,15 @@ class modSlideshowckHelper {
 	 */
 	static function createCss($params, $prefix = 'menu') {
 		$css = Array();
-		$csspaddingtop = ($params->get($prefix . 'paddingtop') AND $params->get($prefix . 'usemargin')) ? 'padding-top: ' . $params->get($prefix . 'paddingtop', '0') . 'px;' : '';
-		$csspaddingright = ($params->get($prefix . 'paddingright') AND $params->get($prefix . 'usemargin')) ? 'padding-right: ' . $params->get($prefix . 'paddingright', '0') . 'px;' : '';
-		$csspaddingbottom = ($params->get($prefix . 'paddingbottom') AND $params->get($prefix . 'usemargin') ) ? 'padding-bottom: ' . $params->get($prefix . 'paddingbottom', '0') . 'px;' : '';
-		$csspaddingleft = ($params->get($prefix . 'paddingleft') AND $params->get($prefix . 'usemargin')) ? 'padding-left: ' . $params->get($prefix . 'paddingleft', '0') . 'px;' : '';
+		$csspaddingtop = ($params->get($prefix . 'paddingtop') AND $params->get($prefix . 'usemargin')) ? 'padding-top: ' . self::testUnit($params->get($prefix . 'paddingtop', '0')) . ';' : '';
+		$csspaddingright = ($params->get($prefix . 'paddingright') AND $params->get($prefix . 'usemargin')) ? 'padding-right: ' . self::testUnit($params->get($prefix . 'paddingright', '0')) . ';' : '';
+		$csspaddingbottom = ($params->get($prefix . 'paddingbottom') AND $params->get($prefix . 'usemargin') ) ? 'padding-bottom: ' . self::testUnit($params->get($prefix . 'paddingbottom', '0')) . ';' : '';
+		$csspaddingleft = ($params->get($prefix . 'paddingleft') AND $params->get($prefix . 'usemargin')) ? 'padding-left: ' . self::testUnit($params->get($prefix . 'paddingleft', '0')) . ';' : '';
 		$css['padding'] = $csspaddingtop . $csspaddingright . $csspaddingbottom . $csspaddingleft;
-		$cssmargintop = ($params->get($prefix . 'margintop') AND $params->get($prefix . 'usemargin')) ? 'margin-top: ' . $params->get($prefix . 'margintop', '0') . 'px;' : '';
-		$cssmarginright = ($params->get($prefix . 'marginright') AND $params->get($prefix . 'usemargin')) ? 'margin-right: ' . $params->get($prefix . 'marginright', '0') . 'px;' : '';
-		$cssmarginbottom = ($params->get($prefix . 'marginbottom') AND $params->get($prefix . 'usemargin')) ? 'margin-bottom: ' . $params->get($prefix . 'marginbottom', '0') . 'px;' : '';
-		$cssmarginleft = ($params->get($prefix . 'marginleft') AND $params->get($prefix . 'usemargin')) ? 'margin-left: ' . $params->get($prefix . 'marginleft', '0') . 'px;' : '';
+		$cssmargintop = ($params->get($prefix . 'margintop') AND $params->get($prefix . 'usemargin')) ? 'margin-top: ' . self::testUnit($params->get($prefix . 'margintop', '0')) . ';' : '';
+		$cssmarginright = ($params->get($prefix . 'marginright') AND $params->get($prefix . 'usemargin')) ? 'margin-right: ' . self::testUnit($params->get($prefix . 'marginright', '0')) . ';' : '';
+		$cssmarginbottom = ($params->get($prefix . 'marginbottom') AND $params->get($prefix . 'usemargin')) ? 'margin-bottom: ' . self::testUnit($params->get($prefix . 'marginbottom', '0')) . ';' : '';
+		$cssmarginleft = ($params->get($prefix . 'marginleft') AND $params->get($prefix . 'usemargin')) ? 'margin-left: ' . self::testUnit($params->get($prefix . 'marginleft', '0')) . ';' : '';
 		$css['margin'] = $cssmargintop . $cssmarginright . $cssmarginbottom . $cssmarginleft;
 		$bgcolor1 = ($params->get($prefix . 'bgcolor1') && $params->get($prefix . 'bgopacity')) ? self::hex2RGB($params->get($prefix . 'bgcolor1'), $params->get($prefix . 'bgopacity')) : $params->get($prefix . 'bgcolor1');
 		$css['background'] = ($params->get($prefix . 'bgcolor1') AND $params->get($prefix . 'usebackground')) ? 'background: ' . $bgcolor1 . ';' : '';
@@ -733,6 +846,7 @@ class modSlideshowckHelper {
 	 * @since   11.1
 	 */
 	public static function truncate($text, $length = 0, $noSplit = true, $allowHtml = true) {
+		if ($length == 0) return '';
 		// Check if HTML tags are allowed.
 		if (!$allowHtml) {
 			// Deal with spacing issues in the input.
@@ -832,7 +946,7 @@ class modSlideshowckHelper {
 
 		return $rgbacolor;
 	}
-	
+
 	/**
 	 * Test if there is already a unit, else add the px
 	 *
@@ -851,4 +965,78 @@ class modSlideshowckHelper {
 		return $value . 'px';
 	}
 
+	/*
+	 * Make empty slide object
+	 */
+	public static function initItem() {
+		$item = new stdClass();
+		$item->imgname = null;
+		$item->imgthumb = null;
+		$item->imgvideo = null;
+		$item->slideselect = null;
+		$item->imgcaption = null;
+		$item->article = new stdClass();
+		$item->slidearticleid = null;
+		$item->imgalignment = null;
+		$item->imgtarget = 'default';
+		$item->imgtime = null;
+		$item->imglink = null;
+		$item->imgtitle = null;
+		$item->article->title = null;
+		$item->article->text = null;
+
+		return $item;
+	}
+
+	/**
+	 * Get a subtring with the max word setting
+	 *
+	 * @param string $text;
+	 * @param int $length limit characters showing;
+	 * @param string $replacer;
+	 * @return tring;
+	 */
+
+	public static function substrword($text, $length = 100, $replacer = '...', $isStrips = true, $stringtags = '') {
+		if($isStrips){
+			$text = preg_replace('/\<p.*\>/Us','',$text);
+			$text = str_replace('</p>','<br/>',$text);
+			$text = strip_tags($text, $stringtags);
+		}
+		$tmp = explode(" ", $text);
+
+		if (count($tmp) < $length)
+			return $text;
+
+		$text = implode(" ", array_slice($tmp, 0, $length)) . $replacer;
+
+		return $text;
+	}
+
+	/**
+	 * Get a subtring with the max length setting.
+	 *
+	 * @param string $text;
+	 * @param int $length limit characters showing;
+	 * @param string $replacer;
+	 * @return tring;
+	 */
+	public static function substring($text, $length = 100, $replacer = '...', $isStrips = true, $stringtags = '') {
+	
+		if($isStrips){
+			$text = preg_replace('/\<p.*\>/Us','',$text);
+			$text = str_replace('</p>','<br/>',$text);
+			$text = strip_tags($text, $stringtags);
+		}
+		
+		if(function_exists('mb_strlen')){
+			if (mb_strlen($text) < $length)	return $text;
+			$text = mb_substr($text, 0, $length);
+		}else{
+			if (strlen($text) < $length)	return $text;
+			$text = substr($text, 0, $length);
+		}
+		
+		return $text . $replacer;
+	}
 }

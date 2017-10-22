@@ -3,6 +3,22 @@
  * http://www.joomlack.fr
  * @license		GNU/GPL
  * */
+
+/* bootstrap override */
+#ckslideslist .chzn-container {
+    display: none !important;
+}
+
+#ckslideslist select {
+    display: inline-block !important;
+}
+
+#ckslideslist li {
+    list-style: none;
+}
+/* fin override */
+
+#options-styles {position:relative;}
  
 #ckaddslide {
 	padding: 5px;
@@ -28,6 +44,11 @@
 	background-color: #eee;
 }
 
+
+.ckslideaccordeoncontent {
+    /*overflow: visible !important;*/
+}
+
 .ckslide {
 	margin: 3px 0 !important;
 	border-radius: 5px;
@@ -35,6 +56,16 @@
 	border: #ccc 1px solid;
 	clear: both;
 	min-height: 60px;
+    list-style: none;
+    max-width: 550px;
+	background: #fff;
+	position: relative;
+}
+
+.placeholder {
+	border: 1px dashed #3399ff;
+	min-height: 100px;
+	max-width: 550px;
 }
 
 .ckslide input, .ckslide select {
@@ -75,6 +106,38 @@
 	border-bottom: 1px solid #ccc;
 }
 
+.ckslidetoggle {
+	background: red;
+	bottom: 0;
+	height: 40px;
+	left: 0;
+	position: absolute;
+	width: 8%;
+	background-color: #dff0d8;
+	/*border-color: #d6e9c6;*/
+	color: #468847;
+	cursor: pointer;
+	border-radius: 0 0 0 5px;
+	border-top: 1px solid #d6e9c6;
+}
+
+.ckslidetoggler {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 10px 0;
+	text-align: center;
+}
+
+.ckslidetoggle[data-state="0"] {
+	background-color: #f2dede;
+	border-top: 1px solid #eed3d7;
+	color: #b94a48;
+}
+
+.ckslidetoggle[data-state="0"] + .ckslidecontainer {
+	opacity: 0.3;
+}
+
 .cksliderow {
 	clear: both;
 }
@@ -85,7 +148,6 @@
 }
 
 .ckselectimg, .ckslidedelete {
-	padding: 5px;
 	color: 333;
 	text-decoration: none;
 	font-weight: normal;
@@ -119,7 +181,8 @@
         top: 0;
         position: absolute;
         right :0;
-        width: 16px;
+        display: block;
+        width: 16px !important;
         height: 16px;
         background: url(delete.png) center center no-repeat;
         border: none;
@@ -138,6 +201,8 @@
 
 .ckslideimgcontainer img {
 	margin: 0 !important;
+    height:64px;
+	width:64px;
 }
 
 .ckslidelabel {
@@ -178,4 +243,5 @@
     background: #eee;
     color: #0080ff;
 }
+
 

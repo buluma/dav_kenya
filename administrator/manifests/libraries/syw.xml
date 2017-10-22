@@ -8,14 +8,15 @@
 	<license>GNU General Public License version 3 or later</license>
 	<authorEmail>olivier.buisard@simplifyyourweb.com</authorEmail>
 	<authorUrl>www.simplifyyourweb.com</authorUrl>
-	<version>1.3.8</version>
-	<description><![CDATA[<p><img src='../libraries/syw/images/logo.png' style='float: none' /><br /><br />version 1.3.8<br /><br />Olivier Buisard @ <a href='http://www.simplifyyourweb.com' target='_blank'>Simplify Your Web</a></p>]]></description>
+	<version>1.3.10</version>
+	<description><![CDATA[<p><img src='../libraries/syw/images/logo.png' style='float: none' /><br /><br />version 1.3.10<br /><br />Olivier Buisard @ <a href='http://www.simplifyyourweb.com' target='_blank'>Simplify Your Web</a></p>]]></description>
 	<packager>SimplifyYourWeb</packager>
 	<packagerurl>http://www.simplifyyourweb.com</packagerurl>
 	<media folder="media" destination="syw">
 		<filename>index.html</filename>
-		<folder>js</folder>
 		<folder>css</folder>
+		<folder>images</folder>
+		<folder>js</folder>		
 	</media>
 	<files>
 		<filename>cache.php</filename>

@@ -11,15 +11,15 @@ jimport('joomla.filesystem.file');
 
 if (JFolder::exists(JPATH_ROOT . '/administrator/components/com_virtuemart')) {
     if (!class_exists('VmConfig')) {
-		if (JFile::exists(JPATH_ROOT . '/administrator/components/com_virtuemart/helpers/config.php'))
-			require(JPATH_ROOT . '/administrator/components/com_virtuemart/helpers/config.php');
+		if (JFile::exists(JPATH_ROOT . '/administrator/components/com_virtuemart/helpers/config.php')) 
+			require(JPATH_ROOT .  '/administrator/components/com_virtuemart/helpers/config.php');
 	}
     if (!class_exists('ShopFunctions')) {
-        if (JFile::exists(JPATH_VM_ADMINISTRATOR . '/helpers/shopfunctions.php'))
+        if (JFile::exists(JPATH_VM_ADMINISTRATOR . '/helpers/shopfunctions.php')) 
 			require(JPATH_VM_ADMINISTRATOR . '/helpers/shopfunctions.php');
 	}
     if (!class_exists('TableCategories')) {
-        if (JFile::exists(JPATH_VM_ADMINISTRATOR . '/tables/categories.php'))
+        if (JFile::exists(JPATH_VM_ADMINISTRATOR . '/tables/categories.php')) 
 			require(JPATH_VM_ADMINISTRATOR . '/tables/categories.php');
 	}
 }
@@ -28,9 +28,10 @@ JFormHelper::loadFieldClass('cklist');
 
 class JFormFieldCkvmcategory extends JFormFieldCklist {
 
-    protected $type = 'ckvmcategory';
+    protected $type = 'Ckvmcategory';
 
     protected function getOptions() {
+		VmConfig::loadConfig();
         // if VM is not installed
         if (!JFolder::exists(JPATH_ROOT . '/administrator/components/com_virtuemart')
 			OR !class_exists('ShopFunctions')) {
@@ -45,6 +46,7 @@ class JFormFieldCkvmcategory extends JFormFieldCklist {
             return $options;
         }
         $categorylist = ShopFunctions::categoryListTree();
+		// $categorylist = 'testced';
         $categorylist = trim($categorylist, '</option>');
         $categorylist = explode("</option><option", $categorylist);
         // add the root item

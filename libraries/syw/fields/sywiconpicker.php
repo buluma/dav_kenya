@@ -30,7 +30,7 @@ class JFormFieldSYWIconPicker extends JFormField
 	
 	protected $icons;
 	protected $icongroups;
-	protected $defaulticon;
+	protected $emptyicon;
 	protected $buttonlabel;
 	protected $help;
 	
@@ -382,7 +382,9 @@ class JFormFieldSYWIconPicker extends JFormField
 		$doc = JFactory::getDocument();	
 		
 		$lang = JFactory::getLanguage();
-		$lang->load('lib_syw.sys', JPATH_SITE);	
+		$lang->load('lib_syw.sys', JPATH_SITE);
+		
+		JHtml::_('bootstrap.tooltip');
 
 		JHtml::_('stylesheet', 'syw/fonts-min.css', false, true);		
 		JHtml::_('stylesheet', 'syw/2d-transitions-min.css', false, true);

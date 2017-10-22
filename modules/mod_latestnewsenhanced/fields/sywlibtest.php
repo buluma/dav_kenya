@@ -14,30 +14,17 @@ jimport('joomla.version');
 /*
  * Checks if the SYW library is installed and has the version needed for the extension to run properly
  */
-class JFormFieldSYWlibtest extends JFormField {
-		
+class JFormFieldSYWlibtest extends JFormField 
+{		
 	public $type = 'SYWlibtest';
 	
-	protected function getLabel() {
-		
-		$html = '';
-		
-		$minversion = $this->element['minversion'];
-		
-		if (!JFolder::exists(JPATH_ROOT.'/libraries/syw')) {
-			$html .= '<div style="clear: both;"></div>';
-		} else {
-			jimport('syw.version');			
-			if (!SYWVersion::isCompatible($minversion)) {	
-				$html .= '<div style="clear: both;"></div>';
-			}
-		}
-		
-		return $html;		
+	protected function getLabel() 
+	{		
+		return '';		
 	}
 	
-	protected function getInput() {
-		
+	protected function getInput() 
+	{		
 		$html = '';
 		
 		$minversion = $this->element['minversion'];

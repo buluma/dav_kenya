@@ -46,4 +46,66 @@ class SYWK2 {
 		return self::$k2_exists;
 	}	
 	
+	/*
+	 * Get all tag objects for k2
+	 *
+	 * @return array of tag objects (false if error)
+	 */
+	static function getTags($whole = false, $tag_ids = array(), $include = true)
+	{
+		$tags = array();
+		
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		
+		if ($whole) { // get the whole object
+			$query->select('tag.id, tag.name AS title, tag.published');
+		} else {
+			$query->select('tag.id, tag.name AS title');
+		}
+		$query->from('#__k2_tags AS tag');
+		
+		$query->join('LEFT', $db->quoteName('#__k2_tags_xref').' AS xref ON tag.id = xref.tagID');
+		$query->join('LEFT', $db->quoteName('#__k2_items').' AS items ON xref.itemID= items.id');
+		
+		
+		
+		
+		// access groups
+		$user = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$query->where('items.access IN (' . $groups . ')');
+		
+		// language
+		$language = JHelperContent::getCurrentLanguage();
+		$query->where($db->quoteName('items.language').' IN ('.$db->quote($language).', '.$db->quote('*').')');
+		
+		
+		
+		
+		$query->where('tag.published = 1');
+				
+		// get tags with specific ids
+		if (is_array($tag_ids) && count($tag_ids) > 0) {
+			JArrayHelper::toInteger($tag_ids);
+			$tag_ids = implode(',', $tag_ids);
+			
+			$test_type = $include ? 'IN' : 'NOT IN';
+			$query->where($db->quoteName('tag.id').' '.$test_type.' ('.$tag_ids.')');
+		}
+		
+		//$query->order('xref.id ASC');
+		$query->order('tag.name ASC');
+		
+		$db->setQuery($query);
+		
+		try {
+			$tags = $db->loadObjectList();
+		} catch (RuntimeException $e) {
+			return false;
+		}
+		
+		return $tags;
+	}
+	
 }

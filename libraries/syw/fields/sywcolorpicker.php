@@ -29,6 +29,8 @@ class JFormFieldSYWColorPicker extends JFormField
 		
 		$lang = JFactory::getLanguage();
 		$lang->load('lib_syw.sys', JPATH_SITE);
+		
+		JHtml::_('bootstrap.tooltip');
 				
 		$allow_transparency = ($this->element['transparency'] == "true") ? TRUE : FALSE;
 		$use_global = ($this->element['global'] == "true") ? TRUE : FALSE;

@@ -10,13 +10,13 @@ defined('_JEXEC') or die;
 // Explicitly declare the type of content
 header("Content-type: text/javascript; charset=UTF-8");
 
-// DO NOT ADD COMMENTS TO THE CODE -  IT WILL BE PREVENT COMPRESSION
+// DO NOT ADD COMMENTS TO THE CODE -  IT WILL PREVENT COMPRESSION
 ?>
 
 (function($){ 
 	$(window).load(function() {
 	
-	    $("<?php echo $module ?>.newslist").pajinate({
+	    $("<?php echo $css_prefix ?>.newslist").pajinate({
 			item_container_id : ".latestnews-items",
 			nav_panel_id : ".items_pagination",
 			items_per_page: <?php echo $visibleatonce ?>,

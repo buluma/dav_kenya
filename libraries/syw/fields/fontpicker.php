@@ -89,6 +89,8 @@ class JFormFieldFontPicker extends JFormField
 	{		
 		$lang = JFactory::getLanguage();
 		$lang->load('lib_syw.sys', JPATH_SITE);
+		
+		JHtml::_('bootstrap.tooltip');
         
         $html = '';     
             

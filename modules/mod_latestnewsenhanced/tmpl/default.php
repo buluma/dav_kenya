@@ -16,13 +16,23 @@ defined('_JEXEC') or die;
 		$categories = modLatestNewsEnhancedExtendedHelperStandard::getCategoryList($params, $list);
 		$nbr_cat = count($categories);
 		
+		if (!empty($readall_link)) {
+			$readall_additional_attributes = '';
+			if ($readall_link_tooltip) {
+				$readall_additional_attributes = ' title="'.$readall_link_label.'" class="hasTooltip'.$extrareadalllinkclass.'"';
+			} else {
+				if ($extrareadalllinkclass != '') {
+					$readall_additional_attributes = ' class="'.$extrareadalllinkclass.'"';
+				}
+			}
+		}
+		
+		$current_catid = $list[0]->catid;
+		$new_catid = true;
+		
 		if ($remove_whitespaces) {
 			ob_start(function($buffer) { return preg_replace('/\s+/', ' ', $buffer); });
 		}
-		
-		$i = 0;
-		$current_catid = $list[0]->catid;
-		$new_catid = true;
 	?>
 	<div id="lnee_<?php echo $class_suffix; ?>" class="lnee newslist<?php echo $isMobile ? ' mobile' : ''; ?> <?php echo $alignment; ?>">
 		
@@ -33,21 +43,32 @@ defined('_JEXEC') or die;
 		<?php endif; ?>	
 		
 		<?php if (!empty($readall_link) && $pos_readall == 'first') : ?>
-			<div class="readalllink first<?php echo $extrareadallclass; ?>"<?php echo $extrareadallstyle; ?>>
-				<a href="<?php echo $readall_link; ?>" title="<?php echo $readall_link_label ?>" class="hasTooltip<?php echo $extrareadalllinkclass; ?>"<?php echo $readall_isExternal ? ' target="_blank"' : ''; ?>><span><?php echo $readall_link_label ?></span></a>
+			<div class="readalllink first<?php echo $extrareadallclass; ?>">
+				<a href="<?php echo $readall_link; ?>"<?php echo $readall_additional_attributes; ?><?php echo $readall_isExternal ? ' target="_blank"' : ''; ?>><span><?php echo $readall_link_label ?></span></a>
 			</div>
 		<?php endif; ?>			
-		<?php if ($show_category && $pos_category == 'first' && $nbr_cat == 1 && $consolidate_category) : ?>
+		<?php if ($pos_category_first && $nbr_cat == 1 && $consolidate_category) : ?>
 			<?php 
 				if ($list[0]->category_authorized) {
 					$cat_label = empty($cat_link_text) ? $list[0]->category_title : $cat_link_text;
 				} else {
 					$cat_label = empty($unauthorized_cat_link_text) ? $list[0]->category_title : $unauthorized_cat_link_text;
 				}
+				
+				if ($link_category) {
+					$category_additional_attributes = '';
+					if ($category_link_tooltip) {
+						$category_additional_attributes = ' title="'.$cat_label.'" class="hasTooltip'.$extracategorylinkclass.'"';
+					} else {
+						if ($extracategorylinkclass != '') {
+							$category_additional_attributes = ' class="'.$extracategorylinkclass.'"';
+						}
+					}
+				}
 			?>
-			<div class="onecatlink first<?php echo $extracategoryclass; ?>"<?php echo $extracategorystyle; ?>>
+			<div class="onecatlink first<?php echo $extracategoryclass; ?>">
 				<?php if ($link_category) : ?>
-					<a href="<?php echo $list[0]->catlink; ?>" title="<?php echo $cat_label; ?>" class="hasTooltip<?php echo $extracategorylinkclass; ?>">
+					<a href="<?php echo $list[0]->catlink; ?>"<?php echo $category_additional_attributes; ?>>
 				<?php endif; ?>
 					<span<?php echo $extracategorynolinkclass; ?>><?php echo $cat_label; ?></span>
 					<?php if ($show_article_count) : ?>&nbsp;<span class="article_count label label-info"><?php echo $categories[$current_catid]->count; ?></span><?php endif; ?>
@@ -67,13 +88,9 @@ defined('_JEXEC') or die;
 					<div class="clearfix"></div>
 				<?php endif; ?>
 			<?php endif; ?>
-		<?php endif; ?>
-		<?php if ($leading_items_count > 0) : ?>
-		<ul class="latestnews-items altered">
-		<?php else : ?>
+		<?php endif; ?>		
 		<ul class="latestnews-items">
-		<?php endif; ?>
-			<?php foreach ($list as $item) :  ?>
+			<?php foreach ($list as $i => $item) :  ?>
 				<?php
 					$extraclasses = ($i % 2) ? " even" : " odd";
 				
@@ -88,15 +105,10 @@ defined('_JEXEC') or die;
 							case 'b' : $extraclasses .= " text_bottom"; break;
 							case 'bt' : $extraclasses .= ($i % 2) ? " text_top" : " text_bottom"; break;
 							case 'tb' : $extraclasses .= ($i % 2) ? " text_bottom" : " text_top"; break;
-							default :
-								
-							break;
 						}
-					}
+					}				
 					
-					$i++;					
-					
-					if ($i > 1) {
+					if ($i > 0) {
 						if ($current_catid != $item->catid) {
 							$current_catid = $item->catid;
 							$new_catid = true;
@@ -111,12 +123,23 @@ defined('_JEXEC') or die;
 						$cat_label = empty($unauthorized_cat_link_text) ? $item->category_title : $unauthorized_cat_link_text;
 					}					
 					
+					if ($link_category) {
+						$category_additional_attributes = '';
+						if ($category_link_tooltip) {
+							$category_additional_attributes = ' title="'.$cat_label.'" class="hasTooltip'.$extracategorylinkclass.'"';
+						} else {
+							if ($extracategorylinkclass != '') {
+								$category_additional_attributes = ' class="'.$extracategorylinkclass.'"';
+							}
+						}
+					}
+					
 					// if the link is link a..c, replace the label with the text for the links a..c
 					// WARNING: 'linktitle' can be the link and not the text of link a..c (in case the text was missing) 
 					// -> changed the behavior in helper_standard so that 'linktitle' is 'title' when text is missing
 					// note: $item->linktitle and $item->title will always be different if the title is truncated ->strpos (trim the dots)
 					
-					if ($show_link_label && $item->link) {
+					if (($add_readmore || $append_readmore) && $item->link) {
 						$link_label_item = $item->authorized ? $link_label : $unauthorized_link_label ;
 						if (strpos($item->linktitle, rtrim($item->title, '.')) === false) {
 							$link_label_item = $item->linktitle;
@@ -141,24 +164,17 @@ defined('_JEXEC') or die;
 					}
 					
 					$css_limited = '';
-					if ($leading_items_count > 0) {
-						if ($i > $leading_items_count) {
-							$css_limited = ' downgraded';
-						} else {
-							$css_limited = ' full';
-						}
-					}
 	
 					$css_shadow = '';
 					if ($show_image && $shadow_width_pic > 0) {
-						if (!($leading_items_count > 0 && $i > $leading_items_count && $remove_head)) {
-							$css_shadow = ' shadow simple';
-						}
+						$css_shadow = ' shadow simple';
 					}
 					
 					$css_hover = '';
-					if ($show_image && $hover_effect != 'none' && $show_link && $item->link) {
-						$css_hover = ' '.$hover_effect;
+					if ($link_head && $item->link) {
+						if ($show_image && $hover_effect != 'none') {
+							$css_hover = ' '.$hover_effect;
+						}
 					}
 					
 					$css_featured = '';
@@ -177,10 +193,10 @@ defined('_JEXEC') or die;
 					<?php endif; ?>				
 					<div class="news<?php echo $extraclasses ?>">
 						<div class="innernews">
-							<?php if ($show_category && $pos_category == 'first' && (($nbr_cat > 1 && $consolidate_category && $new_catid) || !$consolidate_category)) : ?>
-								<div class="catlink<?php echo $extracategoryclass; ?>"<?php echo $extracategorystyle; ?>>		
+							<?php if ($pos_category_first && (($nbr_cat > 1 && $consolidate_category && $new_catid) || !$consolidate_category)) : ?>
+								<div class="catlink<?php echo $extracategoryclass; ?>">		
 									<?php if ($link_category) : ?>						
-										<a href="<?php echo $item->catlink; ?>" title="<?php echo $cat_label; ?>" class="hasTooltip<?php echo $extracategorylinkclass; ?>">
+										<a href="<?php echo $item->catlink; ?>"<?php echo $category_additional_attributes; ?>>
 									<?php endif; ?>
 										<span<?php echo $extracategorynolinkclass; ?>><?php echo $cat_label; ?></span>
 										<?php if ($show_article_count && $consolidate_category) : ?>&nbsp;<span class="article_count label label-info"><?php echo $categories[$item->catid]->count; ?></span><?php endif; ?>	
@@ -189,10 +205,10 @@ defined('_JEXEC') or die;
 									<?php endif; ?>								
 								</div>
 							<?php endif; ?>					
-							<?php if ($show_category && $pos_category == 'first' && ($nbr_cat > 1 && $consolidate_category && !$new_catid)) : ?>
-								<div class="catlink emptyspace<?php echo $extracategoryclass; ?>"<?php echo $extracategorystyle; ?>>
+							<?php if ($pos_category_first && ($nbr_cat > 1 && $consolidate_category && !$new_catid)) : ?>
+								<div class="catlink emptyspace<?php echo $extracategoryclass; ?>">
 									<?php if ($link_category) : ?>						
-										<a href="<?php echo $item->catlink; ?>" title="<?php echo $cat_label; ?>" class="hasTooltip<?php echo $extracategorylinkclass; ?>">
+										<a href="<?php echo $item->catlink; ?>"<?php echo $category_additional_attributes; ?>>
 									<?php endif; ?>
 										<span<?php echo $extracategorynolinkclass; ?>><?php echo $cat_label; ?></span>
 									<?php if ($link_category) : ?>						
@@ -202,17 +218,16 @@ defined('_JEXEC') or die;
 							<?php endif; ?>										
 							<?php if ($title_before_head) : ?>
 								<div class="newsinfooverhead">
-									<?php if ($remove_details && $leading_items_count > 0 && $i > $leading_items_count) : ?>
-									<?php else : ?>
-										<?php if (!empty($info_block) && $info_block_placement == 0) : ?>
-											<?php echo $info_block; ?>
-										<?php endif; ?>
+								
+									<?php if (!empty($info_block) && $info_block_placement == 0) : ?>
+										<dl class="item_details before_title"><?php echo $info_block; ?></dl>
 									<?php endif; ?>
+									
 									<?php if ($show_title) : ?>
 										<h<?php echo $title_html_tag; ?> class="newstitle">
-											<?php if ($show_link) : ?>
+											<?php if ($link_title) : ?>
 												<?php if ($item->link) : ?>
-													<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, true, $popup_width, $popup_height); ?>
+													<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, $link_tooltip, $popup_width, $popup_height); ?>
 														<span><?php echo $item->title; ?></span>
 													</a>
 												<?php else : ?>
@@ -224,70 +239,69 @@ defined('_JEXEC') or die;
 										</h<?php echo $title_html_tag; ?>>
 									<?php endif; ?>
 									<?php if (!empty($info_block) && $info_block_placement == 1) : ?>
-										<?php echo $info_block; ?>
+										<dl class="item_details after_title"><?php echo $info_block; ?></dl>
 									<?php endif; ?>
 								</div>
 							<?php endif; ?>
-							<?php if ($remove_head && $leading_items_count > 0 && $i > $leading_items_count) : ?>
-							<?php else : ?>
-								<?php if ($show_image) : ?>
-									<?php if (!empty($item->imagetag) || $keep_space) : ?>	
-										<div class="newshead picturetype<?php echo $css_hover; ?>">
+							
+							<?php if ($show_image) : ?>
+								<?php if (!empty($item->imagetag) || $keep_space) : ?>	
+									<div class="newshead picturetype<?php echo $css_hover; ?>">
+										<?php if (!empty($item->imagetag)) : ?>
+											<div class="picture">
+										<?php elseif ($keep_space) : ?>		
+											<div class="nopicture">
+										<?php endif; ?>										
 											<?php if (!empty($item->imagetag)) : ?>
-												<div class="picture">
-											<?php elseif ($keep_space) : ?>		
-												<div class="nopicture">
-											<?php endif; ?>										
-												<?php if (!empty($item->imagetag)) : ?>
-													<div class="innerpicture">
-														<?php if ($show_link && $item->link) : ?>
-															<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, true, $popup_width, $popup_height); ?>
-																<?php echo $item->imagetag; ?>
-															</a>
-														<?php else : ?>
+												<div class="innerpicture">
+													<?php if ($link_head && $item->link) : ?>
+														<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, $link_tooltip, $popup_width, $popup_height); ?>
 															<?php echo $item->imagetag; ?>
-														<?php endif; ?>
-													</div>
-												<?php elseif ($keep_space) : ?>
-													<?php if ($show_link && $item->link) : ?>
-														<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, true, $popup_width, $popup_height); ?>
-															<span></span>
 														</a>
 													<?php else : ?>
-														<span></span>
+														<?php echo $item->imagetag; ?>
 													<?php endif; ?>
+												</div>
+											<?php elseif ($keep_space) : ?>
+												<?php if ($link_head && $item->link) : ?>
+													<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, $link_tooltip, $popup_width, $popup_height); ?>
+														<span></span>
+													</a>
+												<?php else : ?>
+													<span></span>
 												<?php endif; ?>
-												</div>
-										</div>		
-									<?php endif; ?>
-								<?php elseif ($show_calendar) : ?>	
-									<?php if (!empty($item->date) || $keep_space) : ?>
-										<div class="newshead calendartype">
-											<?php if (!empty($item->date)) : ?>			
-												<div class="calendar <?php echo $extracalendarclass; ?>">		
-													<?php $date_params = modLatestNewsEnhancedExtendedCalendarHelper::getCalendarBlockData($params, $item->date); ?>											
-													<?php foreach ($date_params as $counter => $date_array) : ?>
-														<?php if (!empty($date_array)) : ?>
-															<span class="position<?php echo ($counter + 1); ?> <?php echo key($date_array); ?>"><?php echo $date_array[key($date_array)]; ?></span>
-														<?php endif; ?>
-													<?php endforeach; ?>							
-												</div>
-											<?php elseif ($keep_space) : ?>	
-												<div class="calendar nodate"></div>
-											<?php endif; ?>	
-										</div>
-									<?php endif; ?>
+											<?php endif; ?>
+											</div>
+									</div>		
+								<?php endif; ?>
+							<?php elseif ($show_calendar) : ?>	
+								<?php if (!empty($item->calendar_date) || $keep_space) : ?>
+									<div class="newshead calendartype">
+										<?php if (!empty($item->calendar_date)) : ?>		
+											<div class="calendar <?php echo $extracalendarclass; ?>">		
+												<?php $date_params = modLatestNewsEnhancedExtendedCalendarHelper::getCalendarBlockData($params, $item->calendar_date); ?>											
+												<?php foreach ($date_params as $counter => $date_array) : ?>
+													<?php if (!empty($date_array)) : ?>
+														<span class="position<?php echo ($counter + 1); ?> <?php echo key($date_array); ?>"><?php echo $date_array[key($date_array)]; ?></span>
+													<?php endif; ?>
+												<?php endforeach; ?>							
+											</div>
+										<?php elseif ($keep_space) : ?>	
+											<div class="nocalendar"></div>
+										<?php endif; ?>	
+									</div>
 								<?php endif; ?>
 							<?php endif; ?>
+							
 							<?php if ($show_image && empty($item->imagetag) && !$keep_space) : ?>
 								<div class="newsinfo noimagespace">
 							<?php else : ?>
 								<div class="newsinfo">
 							<?php endif; ?>
-								<?php if ($show_category && $pos_category == 'title' && (($consolidate_category && $new_catid) || !$consolidate_category)) : ?>
-									<p class="catlink<?php echo $extracategoryclass; ?>"<?php echo $extracategorystyle; ?>>		
+								<?php if ($pos_category_before_title && (($consolidate_category && $new_catid) || !$consolidate_category)) : ?>
+									<p class="catlink<?php echo $extracategoryclass; ?>">		
 										<?php if ($link_category) : ?>						
-											<a href="<?php echo $item->catlink; ?>" title="<?php echo $cat_label; ?>" class="hasTooltip<?php echo $extracategorylinkclass; ?>">
+											<a href="<?php echo $item->catlink; ?>"<?php echo $category_additional_attributes; ?>>
 										<?php endif; ?>
 											<span<?php echo $extracategorynolinkclass; ?>><?php echo $cat_label; ?></span>										
 											<?php if ($show_article_count && $consolidate_category) : ?>&nbsp;<span class="article_count label label-info"><?php echo $categories[$item->catid]->count; ?></span><?php endif; ?>	
@@ -297,17 +311,16 @@ defined('_JEXEC') or die;
 									</p>
 								<?php endif; ?>	
 								<?php if (!$title_before_head) : ?>
-									<?php if ($remove_details && $leading_items_count > 0 && $i > $leading_items_count) : ?>
-									<?php else : ?>
-										<?php if (!empty($info_block) && $info_block_placement == 0) : ?>
-											<?php echo $info_block; ?>
-										<?php endif; ?>
+									
+									<?php if (!empty($info_block) && $info_block_placement == 0) : ?>
+										<dl class="item_details before_title"><?php echo $info_block; ?></dl>
 									<?php endif; ?>
+									
 									<?php if ($show_title) : ?>
 										<h<?php echo $title_html_tag; ?> class="newstitle">
-											<?php if ($show_link) : ?>
+											<?php if ($link_title) : ?>
 												<?php if ($item->link) : ?>
-													<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, true, $popup_width, $popup_height); ?>
+													<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, $link_tooltip, $popup_width, $popup_height); ?>
 														<span><?php echo $item->title; ?></span>
 													</a>
 												<?php else : ?>
@@ -319,46 +332,41 @@ defined('_JEXEC') or die;
 										</h<?php echo $title_html_tag; ?>>
 									<?php endif; ?>			
 								<?php endif; ?>
-								<?php if ($remove_details && $leading_items_count > 0 && $i > $leading_items_count) : ?>
-								<?php else : ?>	
-									<?php if (!empty($info_block) && ($info_block_placement == 3 || ($info_block_placement == 1 && !$title_before_head))) : ?>
-										<?php echo $info_block; ?>
-									<?php endif; ?>	
+								
+								<?php if (!empty($info_block) && ($info_block_placement == 3 || ($info_block_placement == 1 && !$title_before_head))) : ?>
+									<dl class="item_details before_text"><?php echo $info_block; ?></dl>
 								<?php endif; ?>
-								<?php if ($remove_text && $leading_items_count > 0 && $i > $leading_items_count) : ?>
-								<?php else : ?>
-									<?php if (!empty($item->text)) : ?>
-										<div class="newsintro">
-											<?php echo $item->text; ?>
-											<?php if ($show_link_label && $append_link && !empty($link_label_item) && $item->cropped) : ?>
-												<?php if ($item->link) : ?>
-													<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, true, $popup_width, $popup_height, 'link_append'); ?>
-														<span><?php echo $link_label_item; ?></span>
-													</a>
-												<?php endif; ?>	
-											<?php endif; ?>
-										</div>
-									<?php endif; ?>
+								
+								<?php if (!empty($item->text)) : ?>
+									<div class="newsintro">
+										<?php echo $item->text; ?>
+										<?php if ($append_readmore && !empty($link_label_item) && $item->cropped) : ?>
+											<?php if ($item->link) : ?>
+												<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, $link_tooltip, $popup_width, $popup_height, 'link_append'); ?>
+													<span><?php echo $link_label_item; ?></span>
+												</a>
+											<?php endif; ?>	
+										<?php endif; ?>
+									</div>
 								<?php endif; ?>
-								<?php if ($remove_details && $leading_items_count > 0 && $i > $leading_items_count) : ?>
-								<?php else : ?>	
-									<?php if (!empty($info_block) && $info_block_placement == 2) : ?>
-										<?php echo $info_block; ?>
-									<?php endif; ?>
+								
+								<?php if (!empty($info_block) && $info_block_placement == 2) : ?>
+									<dl class="item_details after_text"><?php echo $info_block; ?></dl>
 								<?php endif; ?>
-								<?php if ($show_link_label && !$append_link && !empty($link_label_item) && $item->cropped) : ?>
+								
+								<?php if ($add_readmore && !empty($link_label_item) && $item->cropped) : ?>
 									<?php if ($item->link) : ?>								
-										<p class="link<?php echo $extrareadmoreclass; ?>"<?php echo $extrareadmorestyle; ?>>
-											<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, true, $popup_width, $popup_height, $extrareadmorelinkclass); ?>
+										<p class="link<?php echo $extrareadmoreclass; ?>">
+											<?php echo modLatestNewsEnhancedExtendedHelper::getATag($item, $follow, $link_tooltip, $popup_width, $popup_height, $extrareadmorelinkclass); ?>
 												<span><?php echo $link_label_item; ?></span>
 											</a>
 										</p>
 									<?php endif; ?>
 								<?php endif; ?>
-								<?php if ($show_category && $pos_category == 'last' && (($nbr_cat > 1 && $consolidate_category && $new_catid) || !$consolidate_category)) : ?>
-									<p class="catlink<?php echo $extracategoryclass; ?>"<?php echo $extracategorystyle; ?>>		
+								<?php if ($pos_category_last && (($nbr_cat > 1 && $consolidate_category && $new_catid) || !$consolidate_category)) : ?>
+									<p class="catlink<?php echo $extracategoryclass; ?>">		
 										<?php if ($link_category) : ?>						
-											<a href="<?php echo $item->catlink; ?>" title="<?php echo $cat_label; ?>" class="hasTooltip<?php echo $extracategorylinkclass; ?>">
+											<a href="<?php echo $item->catlink; ?>"<?php echo $category_additional_attributes; ?>>
 										<?php endif; ?>
 											<span<?php echo $extracategorynolinkclass; ?>><?php echo $cat_label; ?></span>
 											<?php if ($show_article_count && $consolidate_category) : ?>&nbsp;<span class="article_count label label-info"><?php echo $categories[$item->catid]->count; ?></span><?php endif; ?>	
@@ -382,17 +390,28 @@ defined('_JEXEC') or die;
 				<?php endif; ?>
 			<?php endif; ?>
 		<?php endif; ?>
-		<?php if ($show_category && $pos_category == 'last' && $nbr_cat == 1 && $consolidate_category) : ?>
+		<?php if ($pos_category_last && $nbr_cat == 1 && $consolidate_category) : ?>
 			<?php 
 				if ($list[0]->category_authorized) {
 					$cat_label = empty($cat_link_text) ? $list[0]->category_title : $cat_link_text;
 				} else {
 					$cat_label = empty($unauthorized_cat_link_text) ? $list[0]->category_title : $unauthorized_cat_link_text;
 				}
+				
+				if ($link_category) {
+					$category_additional_attributes = '';
+					if ($category_link_tooltip) {
+						$category_additional_attributes = ' title="'.$cat_label.'" class="hasTooltip'.$extracategorylinkclass.'"';
+					} else {
+						if ($extracategorylinkclass != '') {
+							$category_additional_attributes = ' class="'.$extracategorylinkclass.'"';
+						}
+					}
+				}
 			?>
-			<div class="onecatlink last<?php echo $extracategoryclass; ?>"<?php echo $extracategorystyle; ?>>
+			<div class="onecatlink last<?php echo $extracategoryclass; ?>">
 				<?php if ($link_category) : ?>
-					<a href="<?php echo $list[0]->catlink; ?>" title="<?php echo $cat_label; ?>" class="hasTooltip<?php echo $extracategorylinkclass; ?>">
+					<a href="<?php echo $list[0]->catlink; ?>"<?php echo $category_additional_attributes; ?>>
 				<?php endif; ?>
 					<span<?php echo $extracategorynolinkclass; ?>><?php echo $cat_label; ?></span>
 					<?php if ($show_article_count) : ?>&nbsp;<span class="article_count label label-info"><?php echo $categories[$current_catid]->count; ?></span><?php endif; ?>
@@ -405,8 +424,8 @@ defined('_JEXEC') or die;
 			</div>
 		<?php endif; ?>	
 		<?php if (!empty($readall_link) && $pos_readall == 'last') : ?>
-			<div class="readalllink last<?php echo $extrareadallclass; ?>"<?php echo $extrareadallstyle; ?>>
-				<a href="<?php echo $readall_link; ?>" title="<?php echo $readall_link_label ?>" class="hasTooltip<?php echo $extrareadalllinkclass; ?>"<?php echo $readall_isExternal ? ' target="_blank"' : ''; ?>><span><?php echo $readall_link_label ?></span></a>
+			<div class="readalllink last<?php echo $extrareadallclass; ?>">
+				<a href="<?php echo $readall_link; ?>"<?php echo $readall_additional_attributes; ?><?php echo $readall_isExternal ? ' target="_blank"' : ''; ?>><span><?php echo $readall_link_label ?></span></a>
 			</div>
 		<?php endif; ?>
 		

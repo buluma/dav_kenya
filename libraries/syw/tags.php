@@ -14,7 +14,7 @@ class SYWTags {
 	*
 	* @return array of tag objects (false if error)
 	*/
-	static function getTags($content_type = '', $whole = false, $tag_ids = array())
+	static function getTags($content_type = '', $whole = false, $tag_ids = array(), $include = true)
 	{
 		$tags = array();
 	
@@ -40,8 +40,10 @@ class SYWTags {
 		// get tags with specific ids
 		if (is_array($tag_ids) && count($tag_ids) > 0) {
 			JArrayHelper::toInteger($tag_ids);
-			$tag_ids = implode(',', $tag_ids);
-			$query->where($db->quoteName('a.id').' IN ('.$tag_ids.')');
+			$tag_ids = implode(',', $tag_ids);			
+			
+			$test_type = $include ? 'IN' : 'NOT IN';
+			$query->where($db->quoteName('a.id').' '.$test_type.' ('.$tag_ids.')');
 		}
 	
 		// access groups
@@ -50,14 +52,14 @@ class SYWTags {
 		$query->where('a.access IN (' . $groups . ')');
 	
 		// language
-		$language = JComponentHelper::getParams('com_tags')->get('tag_list_language_filter', 'all');
+		//$language = JComponentHelper::getParams('com_tags')->get('tag_list_language_filter', 'all');
 	
-		if ($language != 'all') {
-			if ($language == 'current_language') {
+		//if ($language != 'all') {
+			//if ($language == 'current_language') {
 				$language = JHelperContent::getCurrentLanguage();
-			}
-			$query->where($db->quoteName('language').' IN ('.$db->quote($language).', '.$db->quote('*').')');
-		}
+			//}
+			$query->where($db->quoteName('a.language').' IN ('.$db->quote($language).', '.$db->quote('*').')');
+		//}
 	
 		$query->group('a.id, a.title, a.level, a.lft, a.rgt, a.parent_id, a.path');
 		$query->order('a.lft ASC');

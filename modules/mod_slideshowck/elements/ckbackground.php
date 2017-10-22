@@ -16,7 +16,7 @@ class JFormFieldCkbackground extends JFormField {
 		$styles = $this->element['styles'];
 		$background = $this->element['background'] ? 'background: url('.$this->getPathToElements() . '/images/' . $this->element['background'].') left top no-repeat;' : '';
 
-		$html = '<div style="'.$background.$styles.'" ></div>';
+		$html = '<p style="'.$background.$styles.'" ></p>';
         return $html;
     }
 

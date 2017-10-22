@@ -14,7 +14,7 @@ jimport('syw.utilities');
 
 class modLatestNewsEnhancedExtendedCalendarHelper
 {
-	static function getCalendarBlockData($params, $date)
+	static function getCalendarBlockData($params, $date, $isK2 = false)
 	{
 		$data = array();
 
@@ -31,22 +31,27 @@ class modLatestNewsEnhancedExtendedCalendarHelper
 
 		$keys = array($position_1, $position_2, $position_3, $position_4, $position_5);
 
+		$offset = true; // default
+		if ($isK2 && defined('K2_JVERSION')) {
+			$offset = (K2_JVERSION != '15') ? null : 0;
+		}
+
 		foreach ($keys as $key) {
 			switch ($key) {
 				case 'w' :
-					$data[] = array('weekday' => JHTML::_('date', $date, $weekday_format)); // 3 letters or full - translate from language .ini file
+					$data[] = array('weekday' => JHTML::_('date', $date, $weekday_format, $offset)); // 3 letters or full - translate from language .ini file
 					break;
 				case 'd' :
-					$data[] = array('day' => JHTML::_('date', $date, $day_format)); // 01-31 or 1-31
+					$data[] = array('day' => JHTML::_('date', $date, $day_format, $offset)); // 01-31 or 1-31
 					break;
 				case 'm' :
-					$data[] = array('month' => JHTML::_('date', $date, $month_format));
+					$data[] = array('month' => JHTML::_('date', $date, $month_format, $offset));
 					break;
 				case 'y' :
-					$data[] = array('year' => JHTML::_('date', $date, 'Y'));
+					$data[] = array('year' => JHTML::_('date', $date, 'Y', $offset));
 					break;
 				case 't' :
-					$data[] = array('time' => JHTML::_('date', $date, $time_format));
+					$data[] = array('time' => JHTML::_('date', $date, $time_format, $offset));
 					break;
 				case 'e' :
 					$data[] = array('empty' => '&nbsp;');

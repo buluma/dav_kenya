@@ -15,8 +15,9 @@ jimport('joomla.filesystem.folder');
  */
 class pkg_latestnewsenhancedInstallerScript
 {	
-	static $version = '3.1.2';
-	static $minimum_needed_library_version = '1.3.8';
+	static $version = '4.0.0';
+	static $minimum_needed_library_version = '1.3.10';
+	static $available_languages = array('de-DE', 'en-GB', 'es-ES', 'fi-FI', 'fr-FR', 'it-IT', 'pt-BR', 'ru-RU', 'sl-SI', 'tr-TR');
 	static $download_link = 'http://www.simplifyyourweb.com/downloads/syw-extension-library';
 	static $changelog_link = 'http://www.simplifyyourweb.com/free-products/latest-news-enhanced/file/162-latest-news-enhanced';
 	static $transifex_link = 'https://www.transifex.com/opentranslators/latest-news-enhanced';
@@ -75,11 +76,10 @@ class pkg_latestnewsenhancedInstallerScript
 		echo '<br /><br />Olivier Buisard @ <a href="http://www.simplifyyourweb.com" target="_blank">Simplify Your Web</a>';
 		echo '</p>';	
 		
- 		// language test
- 			
- 		$available_languages = array('de-DE', 'en-GB', 'es-ES', 'fi-FI', 'fr-FR', 'it-IT', 'pt-BR', 'ru-RU', 'sl-SI', 'tr-TR');
+ 		// language test 			
+ 		
  		$current_language = JFactory::getLanguage()->getTag();
- 		if (!in_array($current_language, $available_languages)) {
+ 		if (!in_array($current_language, self::$available_languages)) {
  			JFactory::getApplication()->enqueueMessage(JText::sprintf('PKG_LATESTNEWSENHANCED_INFO_LANGUAGETRANSLATE', JFactory::getLanguage()->getName(), self::$transifex_link), 'notice');
  		}
 		
@@ -105,29 +105,32 @@ class pkg_latestnewsenhancedInstallerScript
 			
 			// remove old cached headers which may interfere with fixes, updates or new additions
 						
-			$filenames_to_delete = array();			
+			$filenames_to_delete = array();	
 			
-			$filenames = glob(JPATH_SITE.'/cache/mod_latestnewsenhanced/style_*.{css,js}', GLOB_BRACE);
-			if ($filenames != false) {
-				$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
-			}
+			if (function_exists('glob')) {
+			
+				$filenames = glob(JPATH_SITE.'/cache/mod_latestnewsenhanced/style_*.{css,js}', GLOB_BRACE);
+				if ($filenames != false) {
+					$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
+				}
+					
+				$filenames = glob(JPATH_SITE.'/cache/mod_latestnewsenhanced/animation_*.js');
+				if ($filenames != false) {
+					$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
+				}
 				
-			$filenames = glob(JPATH_SITE.'/cache/mod_latestnewsenhanced/animation_*.js');
-			if ($filenames != false) {
-				$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
+				// from previous versions
+				
+				$filenames = glob(JPATH_ROOT.'/modules/mod_latestnewsenhanced/stylemaster_*.{css,js}', GLOB_BRACE);
+				if ($filenames != false) {
+					$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
+				}
+				
+				$filenames = glob(JPATH_ROOT.'/modules/mod_latestnewsenhanced/animationmaster_*.js');
+				if ($filenames != false) {
+					$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
+				}	
 			}
-			
-			// from previous versions
-			
-			$filenames = glob(JPATH_ROOT.'/modules/mod_latestnewsenhanced/stylemaster_*.{css,js}', GLOB_BRACE);
-			if ($filenames != false) {
-				$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
-			}
-			
-			$filenames = glob(JPATH_ROOT.'/modules/mod_latestnewsenhanced/animationmaster_*.js');
-			if ($filenames != false) {
-				$filenames_to_delete = array_merge($filenames_to_delete, $filenames);
-			}			
 			
 			foreach ($filenames_to_delete as $filename) {
 				if (JFile::exists($filename) && !JFile::delete($filename)) {

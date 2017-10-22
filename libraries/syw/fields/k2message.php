@@ -11,16 +11,30 @@ jimport('syw.fields.message');
 jimport('syw.k2');
 
 /**
- * Shows messages if K2 is installed
+ * Shows messages when K2 is installed or missing
  *
  */
 class JFormFieldK2Message extends JFormFieldMessage 
 {		
 	public $type = 'K2Message';
 	
+	protected $when_missing;
+	
+	static $k2_exists;
+	
+	static function k2exists()
+	{
+		if (!isset(self::$k2_exists)) {
+			
+			self::$k2_exists = SYWK2::exists();
+		}
+		
+		return self::$k2_exists;
+	}
+	
 	public function getLabel() 
 	{
-		if (SYWK2::exists()) {
+		if (self::k2exists() && !$this->when_missing || !self::k2exists() && $this->when_missing) {
 			return parent::getLabel();
 		}
 			
@@ -29,7 +43,7 @@ class JFormFieldK2Message extends JFormFieldMessage
 	
 	public function getInput()
 	{
-		if (SYWK2::exists()) {
+		if (self::k2exists() && !$this->when_missing || !self::k2exists() && $this->when_missing) {
 			return parent::getInput();
 		}
 			
@@ -38,11 +52,22 @@ class JFormFieldK2Message extends JFormFieldMessage
 	
 	public function getControlGroup()
 	{
-		if (SYWK2::exists()) {
+		if (self::k2exists() && !$this->when_missing || !self::k2exists() && $this->when_missing) {
 			return parent::getControlGroup();
 		}
 	
 		return '';
+	}
+	
+	public function setup(SimpleXMLElement $element, $value, $group = null)
+	{
+		$return = parent::setup($element, $value, $group);
+		
+		if ($return) {
+			$this->when_missing = isset($this->element['when_missing']) ? $this->element['when_missing'] : false;
+		}
+		
+		return $return;
 	}
 
 }

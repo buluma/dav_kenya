@@ -508,7 +508,7 @@ class modLatestNewsEnhancedExtendedHelperStandard
 				if (empty($tags) && $params->get('tags_inex', 1)) { // won't return any article if no article has been associated to any tag (when include tags only)
 					return array();
 				}
-			} else if ($params->get('include_tag_children', 1)) { // get tag children
+			} else if ($params->get('include_tag_children', 0)) { // get tag children
 				
 				$tagTreeArray = array();			
 				$helper_tags = new JHelperTags;
@@ -752,8 +752,12 @@ class modLatestNewsEnhancedExtendedHelperStandard
 	
 		$head_type = $params->get('head_type', 'none');
 		
+		$image_types = array('image', 'imageintro', 'imagefull', 'allimagesasc', 'allimagesdesc');
+				
 		$show_image = false;
-		if ($head_type == "image") {
+		
+		if (in_array($head_type, $image_types)) {
+			
 			$show_image = true;
 			
 			$crop_picture = $params->get('crop_pic', 0);
@@ -787,7 +791,7 @@ class modLatestNewsEnhancedExtendedHelperStandard
 			
 			$clear_cache = $params->get('clear_cache', 0);
 			
-			$subdirectory = 'thumbnails/lnee';
+			$subdirectory = 'thumbnails/lne';
 			if ($params->get('thumb_path', 'images') == 'cache') {
 				$subdirectory = 'mod_latestnewsenhanced';
 			}
@@ -808,7 +812,7 @@ class modLatestNewsEnhancedExtendedHelperStandard
 		$trigger_OnContentPrepare = $params->get('trigger_events', false);
 		$force_one_line = $params->get('force_one_line', false);
 		$title_letter_count = trim($params->get('letter_count_title', ''));
-		$show_date = $params->get('show_d', 'date');	
+		//$show_date = $params->get('show_d', 'date');	
 		$link_to = $params->get('link_to', 'article');
 		
 		// ITEM DATA MODIFICATIONS AND ADDITIONS
@@ -940,14 +944,6 @@ class modLatestNewsEnhancedExtendedHelperStandard
 			}
 			
 			$item->linktitle = $item->title;
-				
-			// title
-			
-			if (!$force_one_line) {
-				if (strlen($title_letter_count) > 0) {
-					$item->title = SYWText::getText($item->title, 'txt', (int)$title_letter_count);
-				}
-			}
 			
 			// rating (to avoid call to rating plugin, use $item->vote)
 			
@@ -975,6 +971,11 @@ class modLatestNewsEnhancedExtendedHelperStandard
 			
 			if ($show_image) {
 				
+				// Convert the images field to an array
+				$registry = new JRegistry;
+				$registry->loadString($item->images);
+				$images_array = $registry->toArray();				
+				
 				$thumbnails_exist = false;
 				$filename = '';
 				
@@ -991,14 +992,67 @@ class modLatestNewsEnhancedExtendedHelperStandard
 						
 					$imagesrc = '';
 				
-					if ($head_type == "image") {
-					
+					if ($head_type == 'imageintro') {
+						
+						if ($images_array) {
+							$imagesrc = trim($images_array['image_intro']);
+						}
+						
+					} else if ($head_type == 'imagefull') {
+						
+						if ($images_array) {
+							$imagesrc = trim($images_array['image_fulltext']);
+						}
+						
+					} else if ($head_type == 'image') {
+						
 						if (isset($item->fulltext))	{
 							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext, $item->fulltext);
 						} else {
 							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext);
 						}
-					}	
+						
+					} else if ($head_type == 'allimagesasc') {
+						
+						if (isset($item->fulltext))	{
+							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext, $item->fulltext);
+						} else {
+							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext);
+						}
+						
+						// if images not found, look into intro and full article
+						if (empty($imagesrc)) {
+							
+							if ($images_array) {
+								$imagesrc = trim($images_array['image_intro']);
+								
+								if (empty($imagesrc)) {
+									$imagesrc = trim($images_array['image_fulltext']);
+								}
+							}
+						}
+						
+					} else if ($head_type == 'allimagesdesc') {
+						
+						// look into image intro and full first
+						if ($images_array) {
+							$imagesrc = trim($images_array['image_intro']);
+							
+							if (empty($imagesrc)) {
+								$imagesrc = trim($images_array['image_fulltext']);
+							}
+						}
+						
+						// if image full article not found, look into the article
+						if (empty($imagesrc)) {
+							
+							if (isset($item->fulltext))	{
+								$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext, $item->fulltext);
+							} else {
+								$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext);
+							}
+						}
+					}
 					
 					// last resort, use default image if it exists
 					$used_default_image = false;
@@ -1064,9 +1118,9 @@ class modLatestNewsEnhancedExtendedHelperStandard
 				
 			// ago
 				
-			if ($show_date == 'ago' || $show_date == 'agomhd' || $show_date == 'agohm') {
+			//if ($show_date == 'ago' || $show_date == 'agomhd' || $show_date == 'agohm') {
 				
-				if ($item->date != $db->getNullDate()) {
+				if ($item->date != $db->getNullDate() && $item->date != null) {
 					$details = modLatestNewsEnhancedExtendedHelper::date_to_counter($item->date, ($postdate == 'finished' || $postdate == 'fin_pen' || $postdate == 'pending') ? true : false);
 				
 					$item->nbr_seconds  = intval($details['secs']);
@@ -1075,6 +1129,20 @@ class modLatestNewsEnhancedExtendedHelperStandard
 					$item->nbr_days = intval($details['days']);
 					$item->nbr_months = intval($details['months']);
 					$item->nbr_years = intval($details['years']);
+				}
+			//}
+			
+			// calendar shows a custom field of type 'calendar'
+				
+			if ($head_type == 'calendar') {
+				$item->calendar_date = $item->date;
+			}
+			
+			// title
+			
+			if (!$force_one_line) {
+				if (strlen($title_letter_count) > 0) {
+					$item->title = SYWText::getText($item->title, 'txt', (int)$title_letter_count);
 				}
 			}
 			
@@ -1094,20 +1162,8 @@ class modLatestNewsEnhancedExtendedHelperStandard
 			
 			switch ($text_type)
 			{
-				case 'intrometa':
-					if (trim($item->introtext) != '') {
-						$use_intro = true;
-					} else {
-						$use_intro = false;
-					}
-					break;
-				case 'metaintro':
-					if (trim($item->metadesc) != '') {
-						$use_intro = false;
-					} else {
-						$use_intro = true;
-					}
-					break;
+				case 'intrometa': $use_intro = (trim($item->introtext) != '') ? true : false; break;
+				case 'metaintro': $use_intro = (trim($item->metadesc) != '') ? false : true; break;
 				case 'meta': $use_intro = false; break;
 				default: case 'intro': $use_intro = true;
 			}

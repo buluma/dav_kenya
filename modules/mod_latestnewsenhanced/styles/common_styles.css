@@ -50,24 +50,14 @@
 				background: none;
 				padding: 0;
 			}
-			
-				.lnee.vertical .catlink.emptyspace {
-					display: none;
-				}
-				
-				.lnee.horizontal .catlink.emptyspace {
-					visibility: hidden; /* to keep the space */
-				}
-			
-				.lnee .newshead {}
 		
-						.lnee .newshead .calendar .position1, 
-						.lnee .newshead .calendar .position2, 
-						.lnee .newshead .calendar .position3, 
-						.lnee .newshead .calendar .position4, 
-						.lnee .newshead .calendar .position5 {
-							display: block;
-						}	
+					.lnee .newshead .calendar .position1, 
+					.lnee .newshead .calendar .position2, 
+					.lnee .newshead .calendar .position3, 
+					.lnee .newshead .calendar .position4, 
+					.lnee .newshead .calendar .position5 {
+						display: block;
+					}	
 	
 					.lnee .newshead .picture,
 					.lnee .newshead .nopicture {
@@ -76,17 +66,17 @@
 						position: relative;
 					}
 				
-					.lnee .newshead .picture a,
-					.lnee .newshead .nopicture a {
+					.lnee .newshead .picture .innerpicture a,
+					.lnee .newshead .nopicture > a {
 						text-decoration: none;
 						display: inline-block;
 						height: 100%;
 	    				width: 100%;
-	    				cursor: hand;
+	    				cursor: pointer;
 					}
 					
-					.lnee .newshead .picture a:hover,
-					.lnee .newshead .nopicture a:hover {
+					.lnee .newshead .picture .innerpicture a:hover,
+					.lnee .newshead .nopicture > a:hover {
 						text-decoration: none;
 					}
 		
@@ -94,14 +84,11 @@
 						max-width: 100%;
 						max-height: 100%;
 					}
-					
-					.lnee .newshead .picture .defaultpicture {}
 		
-					.lnee .newshead .nopicture span {
+					.lnee .newshead .nopicture > a span,
+					.lnee .newshead .nopicture > span {
 						display: inline-block;
 					}
-	
-				.lnee .newsinfooverhead {}
 				
 				.lnee .newsinfo {
 					-webkit-box-sizing: border-box;
@@ -114,9 +101,32 @@
 						word-wrap: break-word;
 					}
 					
-					.lnee .newsintro {}
+					.lnee .newstitle,
+					.lnee .head_left .newstitle {
+						text-align: left;
+					}
 					
-					.lnee .newsextra {}
+					.lnee .head_right .newstitle {
+						text-align: right;
+					}
+					
+					.lnee .newsintro,
+					.lnee .head_left .newsintro {
+						text-align: left;
+					}
+					
+					.lnee .head_right .newsintro {
+						text-align: right;
+					}
+					
+					.lnee .newsextra,
+					.lnee .head_left .newsextra {
+						text-align: left;
+					}
+					
+					.lnee .head_right .newsextra {
+						text-align: right;
+					}
 					
 						.lnee .newsextra [class^="SYWicon-"], 
 						.lnee .newsextra [class*=" SYWicon-"] {
@@ -134,55 +144,47 @@
 						.lnee .newsextra .detail_rating .detail_data [class^="SYWicon-"] {
 							font-size: 1.2em;
 						}
-				
-					.lnee .newstitle,
-					.lnee .head_left .newstitle {
-						text-align: left;
-					}
 					
-					.lnee .newsintro,
-					.lnee .head_left .newsintro {
-						text-align: left;
-					}
+.lnee p.link {
+	margin-top: 5px;
+}
+
+.lnee .linkleft {
+	text-align: left !important;
+}
+
+.lnee .linkcenter,
+.lnee .linkjustify {
+	text-align: center !important;
+}
+
+.lnee .linkright {
+	text-align: right !important;
+}
 					
-					.lnee .newsextra,
-					.lnee .head_left .newsextra {
-						text-align: left;
-					}
+.lnee .link {
+	text-align: left;
+}
 					
-					.lnee .link,
-					.lnee .head_left .link {
-						text-align: left;
-					}
+.lnee .head_right .link {
+	text-align: right;
+}
 					
-					.lnee .catlink,
-					.lnee .head_left .catlink {
-						text-align: left;
-					}
+.lnee .catlink {
+	text-align: left;
+}
+
+.lnee .head_right .catlink {
+	text-align: right;
+}
 					
-					.lnee .head_right .newstitle {
-						text-align: right;
-					}
-					
-					.lnee .head_right .newsintro {
-						text-align: right;
-					}
-					
-					.lnee .head_right .newsextra {
-						text-align: right;
-					}
-					
-					.lnee .head_right .link {
-						text-align: right;
-					}
-					
-					.lnee .head_right .catlink {
-						text-align: right;
-					}
-					
-					.lnee p.link {
-						margin-top: 5px;
-					}
+.lnee.vertical .catlink.emptyspace {
+	display: none;
+}
+
+.lnee.horizontal .catlink.emptyspace {
+	visibility: hidden; /* to keep the space */
+}
 	
 .lnee .onecatlink.first,
 .lnee .readalllink.first {
@@ -203,7 +205,9 @@
 	text-indent: 0 !important;
 }
 
-.lnee p {
+.lnee p,
+.lnee dl.item_details,
+.lnee dd.newsextra {
 	margin: 0;
     padding: 0;
 }

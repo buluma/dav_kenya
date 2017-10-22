@@ -94,7 +94,16 @@ class JFormFieldExtensionLink extends JFormField
 			} else {
 				$html .= JText::_($desc);
 			}
-		}		
+		}	
+		
+		if ($type == 'review') {
+			$html = rtrim($html, '.');
+			$html .= ' <a href="'.$link.'" target="_blank" style="text-decoration: none; vertical-align: text-bottom"><i class="SYWicon-star" style="font-size: 1.1em; color: #f7c41f; vertical-align: middle"></i>';
+			$html .= '<i class="SYWicon-star" style="font-size: 1.1em; color: #f7c41f; vertical-align: middle"></i>';
+			$html .= '<i class="SYWicon-star" style="font-size: 1.1em; color: #f7c41f; vertical-align: middle"></i>';
+			$html .= '<i class="SYWicon-star" style="font-size: 1.1em; color: #f7c41f; vertical-align: middle"></i>';
+			$html .= '<i class="SYWicon-star" style="font-size: 1.1em; color: #f7c41f; vertical-align: middle"></i></a>.';
+		}
 		
 		$html .= '</div>';
 

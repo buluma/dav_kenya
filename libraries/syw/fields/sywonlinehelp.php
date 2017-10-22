@@ -24,7 +24,7 @@ class JFormFieldSYWOnlineHelp extends JFormField
 		$title = $this->element['label'] ? (string) $this->element['label'] : ($this->element['title'] ? (string) $this->element['title'] : '');
 		$heading = $this->element['heading'] ? (string) $this->element['heading'] : 'h4';
 		$description = (string) $this->element['description'];
-		$class = !empty($this->class) ? ' class="' . $this->class . '"' : '';
+		$class = !empty($this->element['class']) ? ' class="' . $this->element['class']. '"' : '';
 
 		$url = (string) $this->element['url'];
 

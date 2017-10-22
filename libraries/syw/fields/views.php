@@ -12,28 +12,33 @@ jimport('joomla.filesystem.folder');
 
 class JFormFieldViews extends JFormFieldList
 {
-	public $type = 'Views';	
+	public $type = 'Views';
 	
 	protected function getOptions()
 	{
 		$options = array();
-			
+		
 		$option = $this->element['option'];
 		$view = $this->element['view'];
-	
+		
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 		
-		$query->select('DISTINCT a.id AS value, a.title AS text, a.alias, a.level, a.menutype, a.type, a.template_style_id, a.checked_out');
+		$additional_tag = '';
+		if (JLanguageMultilang::isEnabled()) {
+			$additional_tag = ', " (", a.language, ")"';
+		}
+		
+		$query->select('DISTINCT a.id AS value, CONCAT(a.title, " (", a.alias, ")"'.$additional_tag.') AS text, a.alias, a.level, a.menutype, a.type, a.template_style_id, a.checked_out');
 		$query->from('#__menu AS a');
 		$query->join('LEFT', $db->quoteName('#__menu') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt');
 		$query->where('a.link like '.$db->quote('%option='.$option.'&view='.$view.'%'));
 		$query->where('a.published = 1');
 		
-		if (JLanguageMultilang::isEnabled()) {
-			$lang = JFactory::getLanguage();
-			$query->where('a.language = '.$db->quote($lang->getTag()));
-		}
+		// 		if (JLanguageMultilang::isEnabled()) {
+		// 			$lang = JFactory::getLanguage();
+		// 			$query->where('a.language = '.$db->quote($lang->getTag()));
+		// 		}
 		
 		$db->setQuery($query);
 		
@@ -41,11 +46,11 @@ class JFormFieldViews extends JFormFieldList
 			$options = $db->loadObjectList();
 		} catch (RuntimeException $e) {
 			return false;
-		}		
-
+		}
+		
 		// Merge any additional options in the XML definition.
 		$options = array_merge(parent::getOptions(), $options);
-
+		
 		return $options;
 	}
 	

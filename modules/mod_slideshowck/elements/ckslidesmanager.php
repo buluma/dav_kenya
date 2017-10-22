@@ -38,6 +38,9 @@ JText::script('MOD_SLIDESHOWCK_ARTICLEOPTIONS');
 JText::script('MOD_SLIDESHOWCK_SLIDETIME');
 JText::script('MOD_SLIDESHOWCK_CLEAR');
 JText::script('MOD_SLIDESHOWCK_SELECT');
+JText::script('MOD_SLIDESHOWCK_TITLE');
+JText::script('MOD_SLIDESHOWCK_STARTDATE');
+JText::script('MOD_SLIDESHOWCK_ENDDATE');
 
 class JFormFieldCkslidesmanager extends JFormField {
 
@@ -46,11 +49,18 @@ class JFormFieldCkslidesmanager extends JFormField {
 	protected function getInput() {
 
 		$document = JFactory::getDocument();
-		$document->addScriptDeclaration("JURI='" . JURI::root() . "'");
+		$document->addScriptDeclaration("JURI='" . JURI::root() . "';");
+		$document->addScriptDeclaration("JURIBASE='" . JURI::base() . "';");
 		$path = 'modules/mod_slideshowck/elements/ckslidesmanager/';
-		JHTML::_('behavior.modal');
+		JHtml::_('jquery.framework');
+		JHtml::_('behavior.modal');
+		JHtml::_('jquery.ui', array('core', 'sortable'));
+		// JHTML::_('behavior.modal');
+		JHTML::_('script', 'modules/mod_slideshowck/elements/assets/jquery-ui.min.js');
+		
 		JHTML::_('script', $path . 'ckslidesmanager.js');
 		JHTML::_('script', $path . 'FancySortable.js');
+		JHTML::_('stylesheet', 'modules/mod_slideshowck/elements/assets/jquery-ui.min.css');
 		JHTML::_('stylesheet', $path . 'ckslidesmanager.css');
 
 		$html = '<input name="' . $this->name . '" id="ckslides" type="hidden" value="' . $this->value . '" />'
@@ -60,6 +70,7 @@ class JFormFieldCkslidesmanager extends JFormField {
 				//.'<input name="ckaddfromfolder" id="ckaddfromfolder" type="button" value="Import from a folder" onclick="javascript:addfromfolderck();"/>'
 				//.'<input name="ckstoreslide" id="ckstoreslide" type="button" value="Save" onclick="javascript:storeslideck();"/>'
 				. '<ul id="ckslideslist" style="clear:both;"></ul>'
+//				.'<p>Date: <input type="text" id="datepicker"></p>'
 				. '<input name="ckaddslide" id="ckaddslide" type="button" value="' . JText::_('MOD_SLIDESHOWCK_ADDSLIDE') . '" onclick="javascript:addslideck();"/>';
 
 		return $html;
@@ -84,7 +95,7 @@ class JFormFieldCkslidesmanager extends JFormField {
 		$query = "SELECT id, title FROM #__content WHERE state = 1 LIMIT 2;";
 		$db->setQuery($query);
 		$row = $db->loadObjectList('id');
-//        var_dump($row);
+		var_dump($row);
 		return json_encode($row);
 	}
 

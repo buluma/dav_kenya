@@ -369,7 +369,7 @@ class modLatestNewsEnhancedExtendedHelperK2
 				$get_sub_categories = $params->get('includesubcategories', 'no');
 				if ($get_sub_categories != 'no') {			
 					
-					$levels = $params->get('levelsubcategories', 1); // not usable in K2
+					//$levels = $params->get('levelsubcategories', 1); // not used in K2
 					
 					$itemListModel = K2Model::getInstance('Itemlist', 'K2Model');
 					$sub_categories_array = array();
@@ -680,8 +680,12 @@ class modLatestNewsEnhancedExtendedHelperK2
 		
 		$head_type = $params->get('head_type', 'none');	
 		
+		$image_types = array('image', 'imageintro', 'imagefull', 'allimagesasc', 'allimagesdesc');
+				
 		$show_image = false;
-		if ($head_type == "image") {
+		
+		if (in_array($head_type, $image_types)) {
+			
 			$show_image = true;
 			
 			$crop_picture = $params->get('crop_pic', 0);
@@ -715,7 +719,7 @@ class modLatestNewsEnhancedExtendedHelperK2
 			
 			$clear_cache = $params->get('clear_cache', 0);
 			
-			$subdirectory = 'thumbnails/lnee';
+			$subdirectory = 'thumbnails/lne';
 			if ($params->get('thumb_path', 'images') == 'cache') {
 				$subdirectory = 'mod_latestnewsenhanced';
 			}
@@ -736,7 +740,7 @@ class modLatestNewsEnhancedExtendedHelperK2
 		$trigger_OnContentPrepare = $params->get('trigger_events', false);
 		$force_one_line = $params->get('force_one_line', false);
 		$title_letter_count = trim($params->get('letter_count_title', ''));
-		$show_date = $params->get('show_d', 'date');		
+		//$show_date = $params->get('show_d', 'date');		
 		$link_to = $params->get('link_to', 'article');
 		
 		// ITEM DATA MODIFICATIONS AND ADDITIONS
@@ -842,14 +846,6 @@ class modLatestNewsEnhancedExtendedHelperK2
 			}	
 			
 			$item->linktitle = $item->title;
-						
-			// title
-			
-			if (!$force_one_line) {
-				if (strlen($title_letter_count) > 0) {
-					$item->title = SYWText::getText($item->title, 'txt', (int)$title_letter_count);
-				}
-			}
 				
 			// rating (to avoid call to rating plugin, use $item->vote)
 			
@@ -861,7 +857,7 @@ class modLatestNewsEnhancedExtendedHelperK2
 			$query->where($db->quoteName('v.itemID').' = '.$item->id);
 			
 			$db->setQuery($query);
-
+			
 			$item->vote = '';
 			$item->vote_count = 0;
 			try {
@@ -871,7 +867,7 @@ class modLatestNewsEnhancedExtendedHelperK2
 					$item->vote_count = $rating->rating_count;
 				}
 			} catch (RuntimeException $e) {
-				$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+				//$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');				
 			}
 			
 			// tags
@@ -887,13 +883,14 @@ class modLatestNewsEnhancedExtendedHelperK2
 			
 			$db->setQuery($query);
 			
+			$item->tags = array();
 			try {
 				$tags_array = $db->loadObjectList();
 				if (count($tags_array) > 0) {
 					$item->tags = $tags_array;
 				}
 			} catch (RuntimeException $e) {
-				$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+				//$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');				
 			}
 			
 			// thumbnail image creation
@@ -918,14 +915,53 @@ class modLatestNewsEnhancedExtendedHelperK2
 					// thumbnail(s) do not exist
 					
 					$imagesrc = '';
-			
-					if ($head_type == "image") {
+					
+					if ($head_type == 'imageintro' || $head_type == 'imagefull') { // general image
+						
+						$k2imagesrc = 'media/k2/items/cache/'.md5("Image".$item->id).'_Generic.jpg';
+						if (is_file(JPATH_ROOT.'/'.$k2imagesrc)) { // makes sure the k2 image exists
+							$imagesrc = $k2imagesrc;
+						}
+						
+					} else if ($head_type == 'image') {
 						if (isset($item->fulltext))	{
 							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext, $item->fulltext);
 						} else {
 							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext);
-						}			
-					} 		
+						}
+						
+					} else if ($head_type == 'allimagesasc') {
+						if (isset($item->fulltext))	{
+							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext, $item->fulltext);
+						} else {
+							$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext);
+						}
+						
+						// if images not found, look into general image
+						if (empty($imagesrc)) {
+							$k2imagesrc = 'media/k2/items/cache/'.md5("Image".$item->id).'_Generic.jpg';
+							if (is_file(JPATH_ROOT.'/'.$k2imagesrc)) { // makes sure the k2 image exists
+								$imagesrc = $k2imagesrc;
+							}
+						}
+						
+					} else if ($head_type == 'allimagesdesc') {
+						
+						$k2imagesrc = 'media/k2/items/cache/'.md5("Image".$item->id).'_Generic.jpg';
+						if (is_file(JPATH_ROOT.'/'.$k2imagesrc)) { // makes sure the k2 image exists
+							$imagesrc = $k2imagesrc;
+						}
+						
+						// if general image not found, look into the article images
+						if (empty($imagesrc)) {
+							
+							if (isset($item->fulltext))	{
+								$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext, $item->fulltext);
+							} else {
+								$imagesrc = modLatestNewsEnhancedExtendedHelper::getImageSrcFromContent($item->introtext);
+							}
+						}
+					}					
 			
 					// last resort, use default image if it exists
 					$used_default_image = false;
@@ -991,9 +1027,9 @@ class modLatestNewsEnhancedExtendedHelperK2
 			
 			// ago
 			
-			if ($show_date == 'ago' || $show_date == 'agomhd' || $show_date == 'agohm') {
-						
-				if ($item->date != $db->getNullDate()) {
+			//if ($show_date == 'ago' || $show_date == 'agomhd' || $show_date == 'agohm') {				
+				
+				if ($item->date != $db->getNullDate() && $item->date != null) {
 					$details = modLatestNewsEnhancedExtendedHelper::date_to_counter($item->date, ($postdate == 'finished' || $postdate == 'fin_pen' || $postdate == 'pending') ? true : false);
 				
 					$item->nbr_seconds  = intval($details['secs']);
@@ -1003,6 +1039,20 @@ class modLatestNewsEnhancedExtendedHelperK2
 					$item->nbr_months = intval($details['months']);
 					$item->nbr_years = intval($details['years']);
 				}	
+			//}
+			
+			// calendar shows an extra field of type 'date'
+				
+			if ($head_type == 'calendar') {
+				$item->calendar_date = $item->date;
+			}
+			
+			// title
+			
+			if (!$force_one_line) {
+				if (strlen($title_letter_count) > 0) {
+					$item->title = SYWText::getText($item->title, 'txt', (int)$title_letter_count);
+				}
 			}
 			
 			// text

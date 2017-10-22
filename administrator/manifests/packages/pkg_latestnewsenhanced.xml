@@ -9,7 +9,7 @@
 	<url>http://www.simplifyyourweb.com/</url>
 	<packager>Olivier Buisard</packager>
  	<packagerurl>http://www.simplifyyourweb.com/</packagerurl>
-	<version>3.1.2</version>
+	<version>4.0.0</version>
 	<description>PKG_LATESTNEWSENHANCED_XML_DESCRIPTION</description> 
 	<scriptfile>installer.php</scriptfile>
 	<languages>
@@ -28,6 +28,6 @@
 		<file type="module" id="latestnewsenhanced" client="site">mod_latestnewsenhanced.zip</file>
 	</files>
 	<updateservers>
-		<server type="extension" priority="1" name="Latest News Enhanced updater">http://www.barejoomlatemplates.com/autoupdates/latestnewsenhanced/latestnewsenhanced-pkg-update.xml</server>
+		<server type="extension" priority="1" name="Latest News Enhanced updater">http://www.barejoomlatemplates.com/autoupdates/latestnewsenhanced/latestnewsenhanced-pkg-v4-update.xml</server>
 	</updateservers>
 </extension>

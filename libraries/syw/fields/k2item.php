@@ -18,6 +18,8 @@ class K2ElementItem extends K2Element
         $db = JFactory::getDBO();
         $doc = JFactory::getDocument();
         
+        JHtml::_('bootstrap.tooltip');
+        
         JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_k2/tables');
         $item = JTable::getInstance('K2Item', 'Table');
         

@@ -69,10 +69,6 @@ if (empty($list)) { // $list can be an empty array
 	jimport('syw.fonts');
 	jimport('syw.cache');
 	
-// 	if ($params->get('load_icon_font', 1)) {
-// 		SYWFonts::loadIconFont();
-// 	}
-	
 	// parameters
 	
 	$urlPath = JURI::base().'modules/mod_latestnewsenhanced/';
@@ -107,9 +103,6 @@ if (empty($list)) { // $list can be an empty array
 	$title_before_head = $params->get('title_before_head', false);
 	$title_html_tag = $params->get('title_tag', '4');
 	
-	$link_label = trim($params->get('link', ''));
-	$unauthorized_link_label = '';
-	
 	$follow = $params->get('follow', true);
 	
 	$popup_width = $params->get('popup_x', 600);
@@ -121,15 +114,85 @@ if (empty($list)) { // $list can be an empty array
 	}
 	$force_title_one_line = $params->get('force_one_line', false);
 	
+	$info_block_placement = $params->get('ad_place', 1);
+	$overall_style = $params->get('overall_style', 'original');
+	$keep_space = $params->get('keep_image_space', 1);
+	$alignment = ($items_align == 'v') ? 'vertical' : 'horizontal';
+	$clear_css_cache = $params->get('clear_css_cache', true);
+	
+	// link
+	
+	$link_label = trim($params->get('link', ''));
+	$unauthorized_link_label = '';
+	$link_tooltip = $params->get('readmore_tooltip', 1);
+	
+	$show_link = false; // keep to avoid template override crashes on update
+	$show_link_label = false; // keep to avoid template override crashes on update
+	$append_link = $params->get('append_link', 0); // keep to avoid template override crashes on update and backward compatibility
+	
+	$link_title = false;
+	$link_head = false;
+	$add_readmore = false;
+	$append_readmore = false;
+	
+	$what_to_link = $params->get('what_to_link', '');
+	if (is_array($what_to_link)) {
+		foreach ($what_to_link as $choice) {
+			switch ($choice) {
+				case 'title' : $link_title = true; $show_link = true; break;
+				case 'head' : $link_head = true; $show_link = true; break;
+				case 'label' : $add_readmore = true; $show_link_label = true; break;
+				case 'append' : $append_readmore = true; $append_link = true; break;
+			}
+		}
+	} else { // old values
+		switch ($what_to_link) { // for backward compatibility on template overrides
+			case 'title' : $show_link = true; $link_title = true; $link_head = true; break;
+			case 'label' : $show_link_label = true; $add_readmore = true; break;
+			case 'both' : $show_link = true; $show_link_label = true; $link_title = true; $link_head = true; $add_readmore = true; break;
+		}
+		
+		if ($append_link) {
+			$append_readmore = true;
+		}
+	}
+	
 	// categories
 	
-	$show_category = ($params->get('show_cat', 0) == 0) ? false : true;
-	$link_category = ($params->get('show_cat', 0) == 1) ? true : false;
+	$show_category = ($params->get('show_cat', 0) == 0) ? false : true; // keep for backward compatibility on template overrides
+	$link_category = ($params->get('show_cat', 0) == 1) ? true : false; // keep for backward compatibility on template overrides
 		
-	$pos_category = $params->get('pos_cat', 'last');
+	$pos_category_first = false;
+	$pos_category_over_picture = false;
+	$pos_category_before_title = false;
+	$pos_category_last = false;
+	
+	$pos_category = $params->get('pos_cat', '');
+	if (is_array($pos_category)) {
+		foreach ($pos_category as $choice) {
+			switch ($choice) {
+				case 'first' : $pos_category_first = true; $show_category = true; $pos_category = 'first'; break;
+				case 'title' : $pos_category_before_title = true; $show_category = true; $pos_category = 'title'; break;
+				case 'last' : $pos_category_last = true; $show_category = true; $pos_category = 'last'; break;
+			}
+		}
+		
+		if ($params->get('link_cat_to', 'none') != 'none') {
+			$link_category = true;
+		}
+	} else { // old values
+		if ($show_category) {
+			switch ($pos_category) {
+				case 'first' : $pos_category_first = true; break;
+				case 'title' : $pos_category_before_title = true; break;
+				case 'last' : $pos_category_last = true; break;
+			}
+		}
+	}	
 	
 	$cat_link_text = trim($params->get('cat_link', ''));
 	$unauthorized_cat_link_text = '';
+	$category_link_tooltip = $params->get('cat_tooltip', 1);
 	$consolidate_category = $params->get('consol_cat', 1);
 	$show_category_description = $params->get('show_cat_description', 0);
 	$show_article_count = $params->get('show_article_count', 0);
@@ -140,6 +203,7 @@ if (empty($list)) { // $list can be an empty array
 	$readall_link_label = '';
 	$readall_isExternal = false;
 	if (!empty($readall_link)) {
+		$readall_link_tooltip = $params->get('readall_tooltip', 1);
 		if ($readall_link == 'extern') {
 			$external_url = trim($params->get('readall_external_url', ''));
 			if ($external_url) {
@@ -181,48 +245,9 @@ if (empty($list)) { // $list can be an empty array
 	
 	$pos_readall = $params->get('readall_pos', 'last');	
 	
-	// head
-	
-	$head_type = $params->get('head_type', 'none');
-	$head_width = $params->get('head_w', 64);
-	$head_height = $params->get('head_h', 64);
-	$maintain_height = $params->get('maintain_height', 0);
-	
-	$show_image = false;
-	$show_calendar = false;
-	if ($head_type == "image") {
-		$show_image = true;
-	} else if ($head_type == "calendar") {
-		$show_calendar = true;
-	}
-	
-	$show_link = false;
-	$show_link_label = false;
-	switch ($params->get('what_to_link', '')) {
-		case 'title' :
-			$show_link = true;
-			break;
-		case 'label' :
-			$show_link_label = true;
-			break;
-		case 'both' :		
-			$show_link = true;
-			$show_link_label = true;
-			break;
-		default :
-			break;
-	}
-	
-	$info_block_placement = $params->get('ad_place', 1);
-	$append_link = $params->get('append_link', 0);
-	$overall_style = $params->get('overall_style', 'original');
-	$keep_space = $params->get('keep_image_space', 1);
-	$alignment = ($items_align == 'v') ? 'vertical' : 'horizontal';
-	$clear_css_cache = $params->get('clear_css_cache', true);
-	
 	// read-more skinning
 	
-	$extrareadmorestyle = '';
+	$extrareadmorestyle = ''; // keep to avoid template overrides to crash
 	$extrareadmoreclass = '';
 	$extrareadmorelinkclass = '';	
 
@@ -253,29 +278,13 @@ if (empty($list)) { // $list can be an empty array
 	}
 	
 	switch ($read_more_align) {
-		case 'left': 
-			$extrareadmoreclass .= ' linkleft'; 
-			$extrareadmorestyle = 'text-align:left'; 
-			break;
-		case 'right': 
-			$extrareadmoreclass .= ' linkright'; 
-			$extrareadmorestyle = 'text-align:right'; 
-			break;
-		case 'center': 
-			$extrareadmoreclass .= ' linkcenter'; 
-			$extrareadmorestyle = 'text-align:center'; 
-			break;
-		case 'justify': 
-			$extrareadmoreclass .= ' linkjustify';
+		case 'left': $extrareadmoreclass .= ' linkleft'; break;
+		case 'right': $extrareadmoreclass .= ' linkright'; break;
+		case 'center': $extrareadmoreclass .= ' linkcenter'; break;
+		case 'justify': $extrareadmoreclass .= ' linkjustify';
 			if ($read_more_style == 'bootstrap') { 
 				$extrareadmorelinkclass .= ' btn-block';
-			} else {
-				$extrareadmorestyle = 'text-align:center';
 			}
-	}
-	
-	if (!empty($extrareadmorestyle)) {
-		$extrareadmorestyle = ' style="'.$extrareadmorestyle.'"';
 	}
 	
 	// end read-more skinning
@@ -284,8 +293,8 @@ if (empty($list)) { // $list can be an empty array
 	
 	if ($show_category) {
 		
-		$extracategorystyle = '';
-		$extracategoryclass = ''; // $link_category ? '' : ' nolink';
+		$extracategorystyle = ''; // keep to avoid template overrides to crash
+		$extracategoryclass = '';
 		$extracategorylinkclass = '';	
 		$extracategorynolinkclass = '';
 
@@ -317,33 +326,13 @@ if (empty($list)) { // $list can be an empty array
 		}
 		
 		switch ($params->get('cat_readmore_align', '')) {
-			case 'left': 
-				$extracategoryclass .= ' linkleft';
-				if ($pos_category != 'picture') {
-					$extracategorystyle = 'text-align:left';
-				}
-				break;
-			case 'right': 
-				$extracategoryclass .= ' linkright';
-				if ($pos_category != 'picture') {
-					$extracategorystyle = 'text-align:right';
-				}
-				break;
-			case 'center': 
-				$extracategoryclass .= ' linkcenter';
-				$extracategorystyle = 'text-align:center'; 
-				break;
-			case 'justify': 
-				$extracategoryclass .= ' linkjustify';
+			case 'left': $extracategoryclass .= ' linkleft'; break;
+			case 'right': $extracategoryclass .= ' linkright'; break;
+			case 'center': $extracategoryclass .= ' linkcenter'; break;
+			case 'justify': $extracategoryclass .= ' linkjustify';
 				if ($cat_read_more_style == 'bootstrap') {
 					$extracategorylinkclass .= ' btn-block';
-				} else {
-					$extracategorystyle = 'text-align:center';
-				}				 
-		}
-		
-		if (!empty($extracategorystyle)) {
-			$extracategorystyle = ' style="'.$extracategorystyle.'"';
+				}			 
 		}
 		
 		if (!empty($extracategorynolinkclass)) {
@@ -357,7 +346,7 @@ if (empty($list)) { // $list can be an empty array
 	
 	if (!empty($readall_link)) {
 	
-		$extrareadallstyle = '';
+		$extrareadallstyle = ''; // keep to avoid template overrides to crash
 		$extrareadallclass = '';
 		$extrareadalllinkclass = '';	
 
@@ -383,43 +372,42 @@ if (empty($list)) { // $list can be an empty array
 		}
 		
 		switch ($params->get('readall_align', '')) {
-			case 'left': 
-				$extrareadallclass .= ' linkleft'; 
-				$extrareadallstyle = 'text-align:left'; 
-				break;
-			case 'right': 
-				$extrareadallclass .= ' linkright'; 
-				$extrareadallstyle = 'text-align:right'; 
-				break;
-			case 'center': 
-				$extrareadallclass .= ' linkcenter'; 
-				$extrareadallstyle = 'text-align:center'; 
-				break;
+			case 'left': $extrareadallclass .= ' linkleft'; break;
+			case 'right': $extrareadallclass .= ' linkright'; break;
+			case 'center': $extrareadallclass .= ' linkcenter'; break;
 			case 'justify': 
 				$extrareadallclass .= ' linkjustify';
 				if ($readall_style == 'bootstrap') {
 					$extrareadalllinkclass .= ' btn-block'; 
-				} else {				
-					$extrareadallstyle = 'text-align:center';
 				}
-		}
-		
-		if (!empty($extrareadallstyle)) {
-			$extrareadallstyle = ' style="'.$extrareadallstyle.'"';
 		}
 	}
 	
 	// end readall skinning
 	
-	// start downgrading styles
-	
-	$leading_items_count = 0;
-	$percentage_of_item_size = 100;	
+	// downgrading styles // keep for backward compatibility with old template files
+
+	$leading_items_count = 0; 
 	$remove_head = false;
 	$remove_text = false;
 	$remove_details = false;
 	
-	// end downgrading styles
+	// head
+	
+	$head_type = $params->get('head_type', 'none');
+	$head_width = $params->get('head_w', 64);
+	$head_height = $params->get('head_h', 64);
+	$maintain_height = $params->get('maintain_height', 0);
+	
+	$show_image = false;
+	$show_calendar = false;
+	
+	$image_types = array('image', 'imageintro', 'imagefull', 'allimagesasc', 'allimagesdesc');
+	if (in_array($head_type, $image_types)) {
+		$show_image = true;
+	} else if ($head_type == 'calendar') {
+		$show_calendar = true;
+	}
 	
 	// parameters image
 	
@@ -427,6 +415,7 @@ if (empty($list)) { // $list can be an empty array
 		
 		$border_width_pic = $params->get('border_w', 0);
 		$shadow_width_pic = $params->get('sh_w_pic', 0);
+		$shadow_type_pic = $params->get('sh_type', 's');
 		
 		$head_width = $head_width - $border_width_pic * 2;
 		$head_height = $head_height - $border_width_pic * 2;

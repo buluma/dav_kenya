@@ -19,7 +19,7 @@ class LNE_CSSFileCache extends SYWHeaderFilesCache
 		
 		$variables = array();
 
-		$suffix = $params->get('suffix');
+		$suffix = '#lnee_'.$params->get('suffix');
 		$variables[] = 'suffix';
 		
 		$overall = $params->get('overall_style', 'original');
@@ -58,36 +58,11 @@ class LNE_CSSFileCache extends SYWHeaderFilesCache
 			$news_per_row = (int)(100 / $item_width);
 			$left_for_margins = 100 - ($news_per_row * $item_width);
 			$margin_in_perc = $left_for_margins / ($news_per_row * 2);
-		}
-		
-		$downgraded_item_width = 100; // %
-		$downgraded_item_width_unit = '%';
-		
-		$percentage_of_item_width = $params->get('perc_item_size', 100); // %
-		if ($percentage_of_item_width <= 0 || $percentage_of_item_width > 100) {
-			$percentage_of_item_width = 100;
-		}
-		$variables[] = 'percentage_of_item_width';
-		
-		if ($item_width_unit == '%') {
-		
-			$downgraded_news_per_row = (int)(100 / $percentage_of_item_width);
-			$downgraded_item_width = $item_width * $percentage_of_item_width / 100;
-		
-			if ($downgraded_news_per_row > 1) {
-				$left_for_margins = 100 - (($news_per_row - 1) * $item_width + $downgraded_news_per_row * $downgraded_item_width);
-				$margin_in_perc = $left_for_margins / (($news_per_row + $downgraded_news_per_row - 1) * 2);
-			}
-		} else { // calculate width in pixels
-			$downgraded_item_width_unit = 'px';
-			$downgraded_item_width = (int)($item_width * $percentage_of_item_width / 100);
-		}
+		}	
 		
 		$variables[] = 'margin_in_perc';
-		$variables[] = 'downgraded_item_width';
-		$variables[] = 'downgraded_item_width_unit';		
 		
-		// body parameters		
+		// body parameters
 		
 		$maintain_height = $params->get('maintain_height', 0);
 		$variables[] = 'maintain_height';
@@ -120,8 +95,11 @@ class LNE_CSSFileCache extends SYWHeaderFilesCache
 		
 		// image	
 		
-		$image = false;			
-		if ($head_type == 'image' || $head_type == "imageintro" || $head_type == "imagefull" || $head_type == "author" || $head_type == "allimagesasc" || $head_type == "allimagesdesc") {
+		$image = false;		
+		
+		$image_types = array('image', 'imageintro', 'imagefull', 'allimagesasc', 'allimagesdesc');
+		
+		if (in_array($head_type, $image_types)) {
 			
 			$bgcolor = trim($params->get('imagebgcolor', '')) != '' ? trim($params->get('imagebgcolor')) : 'transparent';
 			$variables[] = 'bgcolor';
@@ -269,7 +247,7 @@ class LNE_JSFileCache extends SYWHeaderFilesCache
 		
 		$variables = array();
 
-		$suffix = $params->get('suffix');
+		$suffix = '#lnee_'.$params->get('suffix');
 		$variables[] = 'suffix';
 		
 		$item_width = trim($params->get('item_w', 100)); // % : it is always in percentages when the caching occurs
@@ -307,8 +285,8 @@ class LNE_JSFileCache extends SYWHeaderFilesCache
 	
 		echo 'jQuery(document).ready(function ($) { ';
 		
-			echo 'var item = $("#lnee_'.$suffix.' .latestnews-item"); ';			
-			echo 'var itemlist = $("#lnee_'.$suffix.' .latestnews-items"); ';
+			echo 'var item = $("'.$suffix.' .latestnews-item"); ';			
+			echo 'var itemlist = $("'.$suffix.' .latestnews-items"); ';
 			
 			echo 'if (item != null) { ';
 				echo 'resize_news(); ';
@@ -379,8 +357,8 @@ class LNE_JSAnimationFileCache extends SYWHeaderFilesCache
 		$suffix = $params->get('suffix');
 		$variables[] = 'suffix';
 		
-		$module = '#lnee_'.$suffix;
-		$variables[] = 'module';
+		$css_prefix = '#lnee_'.$suffix;
+		$variables[] = 'css_prefix';
 		
 		$jQuery_var = 'jQuery';
 		$variables[] = 'jQuery_var';

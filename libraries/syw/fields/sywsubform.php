@@ -16,11 +16,7 @@ if (version_compare(JVERSION, '3.6', 'lt')) {
 
 		protected function getLabel()
 		{
-			$html = '';
-
-			$html .= '<div style="clear: both;"></div>';
-
-			return $html;
+			return '';
 		}
 
 		protected function getInput()
@@ -30,13 +26,13 @@ if (version_compare(JVERSION, '3.6', 'lt')) {
 			$lang = JFactory::getLanguage();
 			$lang->load('lib_syw.sys', JPATH_SITE);
 
-			$html .= '<div style="margin-bottom:0" class="alert alert-warning">';
-			$html .= '<span>';
 			if ($this->message) {
+				$html .= '<div style="margin-bottom:0" class="alert alert-warning">';
+				$html .= '<span>';
 				$html .= JText::_($this->message);
+				$html .= '</span>';
+				$html .= '</div>';
 			}
-			$html .= '</span>';
-			$html .= '</div>';
 				
 			return $html;
 		}
@@ -51,7 +47,6 @@ if (version_compare(JVERSION, '3.6', 'lt')) {
 
 			return $return;
 		}
-
 	}
 
 } else {
@@ -70,12 +65,28 @@ if (version_compare(JVERSION, '3.6', 'lt')) {
 				
 				// fixes to aknowledge Bootstrap
 				
+				// DOES NOT WORK BECAUSE THERE IS A BUG IN THE SUBFORM JAVASCRIPT
+				// Field subform (multiple) produces wrong id #16480 #15187
+				// once fixed, showon and btn colors should work
+				
+				
 				$script = 'jQuery(document).ready(function () { ';
 					$script .= 'jQuery(document).on("subform-row-add", function(event, row) { ';
 						
 						$script .= 'jQuery(row).find("select").chosen(); '; // fix select (class="advancedSelect" does not always work)
 						
+						$script .= 'jQuery(row).find(".hasTooltip").tooltip();';
+						$script .= 'jQuery(row).find(".hasPopover").popover({ container: "body", trigger: "hover focus" });';
+						
 						$script .= 'jQuery(row).find(".radio.btn-group label").addClass("btn");'; // turn radios into btn-group
+						
+						// Prevent clicks on disabled fields
+						$script .= 'jQuery(row).find("fieldset.btn-group").each(function() {';
+							$script .= 'if (jQuery(this).prop("disabled")) {';
+							$script .= 'jQuery(this).css("pointer-events", "none").off("click");';
+								$script .= 'jQuery(this).find(".btn").addClass("disabled");';
+							$script .= '}';
+						$script .= '});';
 						
 						// Add btn-* styling to checked fields according to their values
 						$script .= 'jQuery(row).find(".btn-group label:not(.active)").click(function() { ';
@@ -102,11 +113,11 @@ if (version_compare(JVERSION, '3.6', 'lt')) {
 						$script .= 'jQuery(row).find(\'.btn-group input[checked="checked"]\').each(function() { ';
 							$script .= 'var input = jQuery(this); ';
 							$script .= 'if (input.val() == "") { ';
-								$script .= 'input.parent().find("label[for=\'" + input.attr("id") + "\']").addClass("active btn-primary"); ';
+								$script .= 'input.parent().find(\'label[for="\' + input.attr(\'id\') + \'"]\').addClass("active btn-primary"); ';
 							$script .= '} else if (input.val() == 0) { ';
-								$script .= 'input.parent().find("label[for=\'" + input.attr("id") + "\']").addClass("active btn-danger"); ';
+								$script .= 'input.parent().find(\'label[for="\' + input.attr(\'id\') + \'"]\').addClass("active btn-danger"); ';
 							$script .= '} else { ';
-								$script .= 'input.parent().find("label[for=\'" + input.attr("id") + "\']").addClass("active btn-success"); ';
+								$script .= 'input.parent().find(\'label[for="\' + input.attr(\'id\') + \'"]\').addClass("active btn-success"); ';
 							$script .= '} ';
 						$script .= '}); ';
 						

@@ -67,14 +67,17 @@ class JFormFieldDetailSelect extends JFormFieldList
 		return self::$k2_fields;
 	}
 
-	protected function getInput() {
-			
+	protected function getOptions() 
+	{			
 		$options = array();
 		
 		$options[] = JHTML::_('select.option', 'hits', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_HITS'), 'value', 'text', $disable = false);
 		$options[] = JHTML::_('select.option', 'rating', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_RATING'), 'value', 'text', $disable = false);
 		$options[] = JHTML::_('select.option', 'author', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_AUTHOR'), 'value', 'text', $disable = false);
 		$options[] = JHTML::_('select.option', 'date', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_DATE'), 'value', 'text', $disable = false);
+		$options[] = JHTML::_('select.option', 'ago', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_AGO'), 'value', 'text', $disable = false);
+		$options[] = JHTML::_('select.option', 'agomhd', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_AGOMHD'), 'value', 'text', $disable = false);
+		$options[] = JHTML::_('select.option', 'agohm', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_AGOHM'), 'value', 'text', $disable = false);
 		$options[] = JHTML::_('select.option', 'time', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_TIME'), 'value', 'text', $disable = false);
 		$options[] = JHTML::_('select.option', 'category', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_CATEGORY'), 'value', 'text', $disable = false);
 		$options[] = JHTML::_('select.option', 'linkedcategory', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKEDCATEGORY'), 'value', 'text', $disable = false);
@@ -83,15 +86,16 @@ class JFormFieldDetailSelect extends JFormFieldList
 		$options[] = JHTML::_('select.option', 'linkedtags', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKEDTAGS'), 'value', 'text', $disable = true);
 		$options[] = JHTML::_('select.option', 'linkedselectedtags', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKEDSELECTEDTAGS'), 'value', 'text', $disable = true);
 		$options[] = JHTML::_('select.option', 'keywords', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_KEYWORDS'), 'value', 'text', $disable = false);
+		$options[] = JHTML::_('select.option', 'readmore', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_READMORE'), 'value', 'text', $disable = false);
+		$options[] = JHTML::_('select.option', 'share', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_SHAREICONS'), 'value', 'text', $disable = true);
+
 		$options[] = JHTML::_('select.option', 'linka', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKA'), 'value', 'text', $disable = true);
 		$options[] = JHTML::_('select.option', 'linkb', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKB'), 'value', 'text', $disable = true);
 		$options[] = JHTML::_('select.option', 'linkc', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKC'), 'value', 'text', $disable = true);
 		$options[] = JHTML::_('select.option', 'links', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKS'), 'value', 'text', $disable = true);
 		$options[] = JHTML::_('select.option', 'linksnl', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKSNEWLINE'), 'value', 'text', $disable = true);
-		$options[] = JHTML::_('select.option', 'readmore', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_READMORE'), 'value', 'text', $disable = false);
-		$options[] = JHTML::_('select.option', 'share', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_SHAREICONS'), 'value', 'text', $disable = true);
-
-		if (JFile::exists(JPATH_ROOT . '/components/com_jcomments/jcomments.php')) {
+		
+		if (JFile::exists(JPATH_ROOT . '/components/com_jcomments/jcomments.php')) { // for K2 also
 			$options[] = JHTML::_('select.option', 'jcommentscount', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_JCOMMENTSCOUNT'), 'value', 'text', $disable = true);
 			$options[] = JHTML::_('select.option', 'linkedjcommentscount', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_LINKEDJCOMMENTSCOUNT'), 'value', 'text', $disable = true);
 		}
@@ -134,7 +138,7 @@ class JFormFieldDetailSelect extends JFormFieldList
 			$fields = self::getCoreFields();
 				
 			// supported field types
-			$allowed_types = array('calendar', 'checkboxes', 'email', 'integer', 'list', 'radio', 'tel', 'text', 'textarea', 'url');
+			$allowed_types = array('calendar', 'checkboxes', 'integer', 'list', 'radio', 'text', 'textarea', 'url');
 				
 			// organize the fields according to their group
 		
@@ -185,9 +189,7 @@ class JFormFieldDetailSelect extends JFormFieldList
 		// Merge any additional options in the XML definition.
 		$options = array_merge(parent::getOptions(), $options);
 		
-		$attributes = 'class="inputbox"';
-
-		return JHTML::_('select.genericlist', $options, $this->name, $attributes, 'value', 'text', $this->value, $this->id);
+		return $options;
 	}
 }
 ?>

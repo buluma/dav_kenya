@@ -83,8 +83,8 @@ class JFormFieldLinkSelect extends JFormFieldList
 		return self::$k2_fields;
 	}
 
-	protected function getInput() {
-			
+	protected function getOptions() 
+	{	
 		$options = array();
 		
 		if (SYWK2::exists()) {
@@ -161,9 +161,7 @@ class JFormFieldLinkSelect extends JFormFieldList
 		// Merge any additional options in the XML definition.
 		$options = array_merge(parent::getOptions(), $options);
 		
-		$attributes = 'class="inputbox"';
-
-		return JHTML::_('select.genericlist', $options, $this->name, $attributes, 'value', 'text', $this->value, $this->id);
+		return $options;
 	}
 }
 ?>

@@ -83,20 +83,114 @@ class JFormFieldHeadSelect extends JFormFieldList
 		return self::$k2_fields;
 	}
 
-	protected function getInput() {
-			
+	protected function getOptions() 
+	{			
 		$options = array();
 		
-		if (SYWK2::exists()) {
-						
+		$k2extrafields = array();
+		$customfields = array();
+		
+		if (SYWK2::exists()) {						
 			// get K2 extra fields
-			$fields = self::getK2Fields(array('image'));
-									
+			$k2extrafields = self::getK2Fields(array('date', 'image'));
+		}
+		
+		if (JFolder::exists(JPATH_ADMINISTRATOR . '/components/com_fields') && JComponentHelper::isEnabled('com_fields') && JComponentHelper::getParams('com_content')->get('custom_fields_enable', '1')) {
+			
+			$field_types = array('calendar', 'media');
+			
+			if (JPluginHelper::isEnabled('fields', 'sywicon')) {
+				$field_types[] = 'sywicon';
+			}
+			
+			// get the custom fields
+			$customfields = self::getCoreFields($field_types);
+		}
+		
+		// images
+		
+		$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGEGROUP'));
+		
+		$options[] = JHTML::_('select.option', 'image', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGE'), 'value', 'text', $disable = false);
+		if (SYWK2::exists()) {
+			$options[] = JHTML::_('select.option', 'imageintro', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGEINTRO_WITHK2'), 'value', 'text', $disable = false);
+			$options[] = JHTML::_('select.option', 'imagefull', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGEFULL_WITHK2'), 'value', 'text', $disable = false);
+			$options[] = JHTML::_('select.option', 'allimagesasc', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_ALLIMAGESASC_WITHK2'), 'value', 'text', $disable = false);
+			$options[] = JHTML::_('select.option', 'allimagesdesc', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_ALLIMAGESDESC_WITHK2'), 'value', 'text', $disable = false);
+		} else {
+			$options[] = JHTML::_('select.option', 'imageintro', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGEINTRO'), 'value', 'text', $disable = false);
+			$options[] = JHTML::_('select.option', 'imagefull', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGEFULL'), 'value', 'text', $disable = false);
+			$options[] = JHTML::_('select.option', 'allimagesasc', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_ALLIMAGESASC'), 'value', 'text', $disable = false);
+			$options[] = JHTML::_('select.option', 'allimagesdesc', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_ALLIMAGESDESC'), 'value', 'text', $disable = false);
+		}
+		
+		$options[] = JHTML::_('select.option', 'author', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_AUTHORCONTACT'), 'value', 'text', $disable = true);
+		if (SYWK2::exists()) {
+			$options[] = JHTML::_('select.option', 'authork2user', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_AUTHORK2USER'), 'value', 'text', $disable = true);
+		}
+		
+		$group_options = self::getFieldGroup('com_content', $customfields, 'media');
+		$options = array_merge($options, $group_options);
+		
+		if (SYWK2::exists()) {
+			$group_options = self::getFieldGroup('com_k2', $k2extrafields, 'image');
+			$options = array_merge($options, $group_options);
+		}
+		
+		$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_IMAGEGROUP'));
+		
+		// icons
+		
+		if (JPluginHelper::isEnabled('fields', 'sywicon')) {
+			$group_options = self::getFieldGroup('com_content', $customfields, 'sywicon');
+			if (!empty($group_options)) {
+				$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_ICONGROUP'));
+				$options = array_merge($options, $group_options);
+				$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_ICONGROUP'));
+			}
+		}
+		
+		// calendars
+		
+		$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_CALENDARGROUP'));
+		
+		$options[] = JHTML::_('select.option', 'calendar', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_CALENDAR'), 'value', 'text', $disable = false);
+		
+		$group_options = self::getFieldGroup('com_content', $customfields, 'calendar');
+		$options = array_merge($options, $group_options);
+		
+		if (SYWK2::exists()) {
+			$group_options = self::getFieldGroup('com_k2', $k2extrafields, 'date');
+			$options = array_merge($options, $group_options);
+		}
+		
+		$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_CALENDARGROUP'));
+		
+		// merge any additional options in the XML definition.
+		$options = array_merge(parent::getOptions(), $options);
+		
+		return $options;
+	}
+	
+	protected function getFieldGroup($option, $fields, $type)
+	{
+		$options = array();
+		
+		if (empty($fields)) {
+			return $options;
+		}
+		
+		if ($option == 'com_k2') {
+			
 			$fields_count = 0;
 			foreach ($fields as $field) {
-					
+				
+				if ($field->type != $type) {
+					continue;
+				}
+				
 				if ($fields_count == 0) {
-					$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_K2EXTRAFIELDS'));
+					//$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_K2EXTRAFIELDS'));
 				}
 				
 				$options[] = JHTML::_('select.option', 'k2field:'.$field->type.':'.$field->id, 'K2: '.$field->group_name.': '.$field->name, 'value', 'text', $disable = true);
@@ -105,71 +199,59 @@ class JFormFieldHeadSelect extends JFormFieldList
 			}
 			
 			if ($fields_count > 0) {
-				$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_K2EXTRAFIELDS'));
-			}			
-		}	
+				//$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_K2EXTRAFIELDS'));
+			}
+		}
 		
-		// get Joomla! fields
-		// test the fields folder first to avoid message warning that the component is missing
-		if (JFolder::exists(JPATH_ADMINISTRATOR . '/components/com_fields') && JComponentHelper::isEnabled('com_fields') && JComponentHelper::getParams('com_content')->get('custom_fields_enable', '1')) {
-
-			$field_types = array('media');
+		if ($option == 'com_content') {
 			
-			if (JPluginHelper::isEnabled('fields', 'sywicon')) {
-				$field_types[] = 'sywicon';
-			}			
-			
-			// get the custom fields
-			$fields = self::getCoreFields($field_types);
-						
 			// organize the fields according to their group
-				
+			
 			$fieldsPerGroup = array(
-				0 => array()
+					0 => array()
 			);
-				
+			
 			$groupTitles = array(
-				0 => JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_NOGROUPFIELD')
+					0 => JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_NOGROUPFIELD')
 			);
-				
+			
 			$fields_exist = false;
 			foreach ($fields as $field) {
-					
+				
+				if ($field->type != $type) {
+					continue;
+				}
+				
 				if (!array_key_exists($field->group_id, $fieldsPerGroup)) {
 					$fieldsPerGroup[$field->group_id] = array();
 					$groupTitles[$field->group_id] = $field->group_title;
 				}
-					
+				
 				$fieldsPerGroup[$field->group_id][] = $field;
 				$fields_exist = true;
 			}
-				
+			
 			// loop trough the groups
 			
 			if ($fields_exist) {
-				$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_JOOMLAFIELDS'));
-			
+				//$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_JOOMLAFIELDS'));
+				
 				foreach ($fieldsPerGroup as $group_id => $groupFields) {
-			
+					
 					if (!$groupFields) {
 						continue;
 					}
-			
+					
 					foreach ($groupFields as $field) {
 						$options[] = JHTML::_('select.option', 'jfield:'.$field->type.':'.$field->id, $groupTitles[$group_id].': '.$field->title, 'value', 'text', $disable = true);
 					}
 				}
-			
-				$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_JOOMLAFIELDS'));
+				
+				//$options[] = JHtml::_('select.optgroup', JText::_('MOD_LATESTNEWSENHANCEDEXTENDED_VALUE_JOOMLAFIELDS'));
 			}
 		}
 		
-		// Merge any additional options in the XML definition.
-		$options = array_merge(parent::getOptions(), $options);
-		
-		$attributes = 'class="inputbox"';
-
-		return JHTML::_('select.genericlist', $options, $this->name, $attributes, 'value', 'text', $this->value, $this->id);
+		return $options;
 	}
 }
 ?>

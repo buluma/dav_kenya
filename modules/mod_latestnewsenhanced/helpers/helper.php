@@ -418,21 +418,22 @@ class modLatestNewsEnhancedExtendedHelper
 			return $info_block;
 		}	
 		
-		$show_date = $params->get('show_d', 'date');
+		$show_date = $params->get('show_d', 'date'); // kept for backward compatibility
 		$date_format = $params->get('d_format', 'd F Y');
 		$time_format = $params->get('t_format', 'H:i');
 		$postdate = $params->get('post_date', 'published');
 		
-		$separator = htmlspecialchars($params->get('separator', ''));	
+		$separator = htmlspecialchars($params->get('separator', ''));
+		$separator = empty($separator) ? '&nbsp;' : $separator;
 		
-		$info_block .= '<p class="newsextra">';	
+		$info_block .= '<dd class="newsextra">';	
 		$has_info_from_previous_detail = false;	
 		
 		foreach ($infos as $key => $value) {
 			
 			switch ($value[0]) {
 				case 'newline':
-					$info_block .= '</p><p class="newsextra">';
+					$info_block .= '</dd><dd class="newsextra">';
 					$has_info_from_previous_detail = false;
 				break;
 					
@@ -440,11 +441,7 @@ class modLatestNewsEnhancedExtendedHelper
 						
 					if (isset($item->link) && !empty($item->link) && $item->cropped) {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}
 				
 						$info_block .= '<span class="detail detail_readmore">';
@@ -483,11 +480,7 @@ class modLatestNewsEnhancedExtendedHelper
 					//if ($item_params->get('show_hits')) {
 					if (isset($item->hits)) {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}		
 		
 						$info_block .= '<span class="detail detail_hits">';
@@ -511,11 +504,7 @@ class modLatestNewsEnhancedExtendedHelper
 					//if ($item_params->get('show_vote')) {
 					if (isset($item->vote)) {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}			
 		
 						$info_block .= '<span class="detail detail_rating">';
@@ -584,11 +573,7 @@ class modLatestNewsEnhancedExtendedHelper
 					//if ($item_params->get('show_author')) {
 					if (isset($item->author)) {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}
 		
 						$info_block .= '<span class="detail detail_author">';
@@ -610,11 +595,7 @@ class modLatestNewsEnhancedExtendedHelper
 				case 'keywords':
 					if (isset($item->metakey) && !empty($item->metakey)) {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}
 						
 						$info_block .= '<span class="detail detail_keywords">';
@@ -640,11 +621,7 @@ class modLatestNewsEnhancedExtendedHelper
 					if (isset($item->category_title)) {
 					
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}
 						
 						$info_block .= '<span class="detail detail_category">';
@@ -675,15 +652,15 @@ class modLatestNewsEnhancedExtendedHelper
 				break;
 						
 				case 'date':
-					if (empty($item->date)) {
-						$info_block .= '<span class="news_nodate"></span>';
-					} else {
+				case 'ago':
+				case 'agomhd':
+				case 'agohm':
+// 					if (empty($item->date)) {
+// 						$info_block .= '<span class="news_nodate"></span>';
+// 					} else {
+					if (isset($item->date)) {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}
 						
 						$info_block .= '<span class="detail detail_date">';
@@ -692,9 +669,13 @@ class modLatestNewsEnhancedExtendedHelper
 												
 						$info_block .= '<span class="detail_data">';
 						
-						if ($show_date == 'date') {
+						if ($show_date != 'date') { // for backward compatibility until re-saved
+							$value[0] = $show_date;
+						}
+						
+						if ($value[0] == 'date') {
 							$info_block .= JHTML::_('date', $item->date, $date_format);
-						} else if ($show_date == 'ago' && isset($item->nbr_days)) {							
+						} else if ($value[0] == 'ago' && isset($item->nbr_days)) {							
 							if ($item->nbr_years > 0) {
 								if ($postdate == 'finished' || $postdate == 'fin_pen' || $postdate == 'pending') {
 									$info_block .= JText::sprintf('MOD_LATESTNEWSENHANCEDEXTENDED_INYEARSMONTHSDAYSONLY', $item->nbr_years, $item->nbr_months, $item->nbr_days);
@@ -722,7 +703,7 @@ class modLatestNewsEnhancedExtendedHelper
 									$info_block .= JText::sprintf('MOD_LATESTNEWSENHANCEDEXTENDED_DAYSAGO', $item->nbr_days);
 								}
 							}
-						} else if ($show_date == 'agomhd' && isset($item->nbr_days)) {							
+						} else if ($value[0] == 'agomhd' && isset($item->nbr_days)) {							
 							if ($item->nbr_years > 0) {
 								if ($postdate == 'finished' || $postdate == 'fin_pen' || $postdate == 'pending') {
 									$info_block .= JText::sprintf('MOD_LATESTNEWSENHANCEDEXTENDED_INYEARSMONTHSDAYSONLY', $item->nbr_years, $item->nbr_months, $item->nbr_days);
@@ -835,11 +816,7 @@ class modLatestNewsEnhancedExtendedHelper
 						$info_block .= '<span class="news_notime"></span>';
 					} else {
 						if ($has_info_from_previous_detail) {
-							if (!empty($separator)) {
-								$info_block .= '<span class="delimiter">'.$separator.'</span>';
-							} else {
-								$info_block .= '<span class="delimiter">&nbsp;</span>';
-							}
+							$info_block .= '<span class="delimiter">'.$separator.'</span>';
 						}
 						
 						$info_block .= '<span class="detail detail_time">';
@@ -860,10 +837,10 @@ class modLatestNewsEnhancedExtendedHelper
 			}
 		}
 		
-		$info_block .= '</p>';
+		$info_block .= '</dd>';
 		
-		// remove potential <p class="newsextra"></p> when no data is available
-		$info_block = str_replace('<p class="newsextra"></p>', '', $info_block);		
+		// remove potential 'newsextra' block when no data is available
+		$info_block = str_replace('<dd class="newsextra"></dd>', '', $info_block);		
 		
 		return $info_block;
 	}

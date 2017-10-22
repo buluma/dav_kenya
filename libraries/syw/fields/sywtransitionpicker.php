@@ -130,7 +130,9 @@ class JFormFieldSYWTransitionPicker extends JFormField
 		$doc = JFactory::getDocument();	
 		
 		$lang = JFactory::getLanguage();
-		$lang->load('lib_syw.sys', JPATH_SITE);	
+		$lang->load('lib_syw.sys', JPATH_SITE);
+		
+		JHtml::_('bootstrap.tooltip');
 		
 		JHtml::_('stylesheet', 'syw/fonts-min.css', false, true);
 		JHtml::_('stylesheet', 'syw/2d-transitions-min.css', false, true);

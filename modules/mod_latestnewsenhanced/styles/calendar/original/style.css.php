@@ -12,14 +12,12 @@ header("Content-type: text/css; charset=UTF-8");
 ?>
 
 <?php if ($cal_shadow_width > 0) : ?>
-	#lnee_<?php echo $suffix; ?> .newsinfo {
+	<?php echo $suffix; ?> .newsinfo {
 		margin-top: <?php echo $cal_shadow_width; ?>px;
 	}
 <?php endif; ?>
 			
-#lnee_<?php echo $suffix; ?> .newshead {}
-			
-	#lnee_<?php echo $suffix; ?> .newshead .calendar {	
+	<?php echo $suffix; ?> .newshead .calendar {	
 		font-family: Arial, Helvetica, sans-serif;
 		font-size: <?php echo $font_ratio; ?>em;
 		text-align: center;
@@ -34,7 +32,13 @@ header("Content-type: text/css; charset=UTF-8");
 		<?php endif; ?>	
 	}
 	
-	#lnee_<?php echo $suffix; ?> .newshead .calendar.noimage {			
+	<?php if ($cal_shadow_width > 0) : ?>
+		<?php echo $suffix; ?> .newshead .nocalendar {			
+			margin: <?php echo $cal_shadow_width; ?>px;
+		}
+	<?php endif; ?>
+	
+	<?php echo $suffix; ?> .newshead .calendar.noimage {			
 		
 		background: <?php echo $bgcolor1; ?>; /* Old browsers */
 		
@@ -75,11 +79,11 @@ header("Content-type: text/css; charset=UTF-8");
 		<?php endif; ?>
 	}	
 	
-		#lnee_<?php echo $suffix; ?> .newshead .calendar .empty {
+		<?php echo $suffix; ?> .newshead .calendar .empty {
 		    line-height: 0.6em;
 		}	
 	
-		#lnee_<?php echo $suffix; ?> .newshead .calendar.noimage .position1 {							
+		<?php echo $suffix; ?> .newshead .calendar.noimage .position1 {							
 			
 			background: <?php echo $bgcolor1_top; ?>; /* Old browsers */
 			
@@ -124,7 +128,7 @@ header("Content-type: text/css; charset=UTF-8");
 			line-height: 1.5em !important;
 		}
 		
-		#lnee_<?php echo $suffix; ?> .newshead .calendar.noimage .position5 {
+		<?php echo $suffix; ?> .newshead .calendar.noimage .position5 {
 			
 			background: <?php echo $bgcolor1_bottom; ?>; /* Old browsers */
 			
@@ -169,7 +173,7 @@ header("Content-type: text/css; charset=UTF-8");
 			font-size: 0.8em !important;
 		}
 	
-		#lnee_<?php echo $suffix; ?> .newshead .calendar .weekday {
+		<?php echo $suffix; ?> .newshead .calendar .weekday {
 			font-size: 0.8em;
 			line-height: 1em;
 			text-transform: uppercase;
@@ -177,7 +181,7 @@ header("Content-type: text/css; charset=UTF-8");
 			text-indent: 0.4em;
 		}
 		
-		#lnee_<?php echo $suffix; ?> .newshead .calendar .month {
+		<?php echo $suffix; ?> .newshead .calendar .month {
 			font-size: 0.8em;
 			line-height: 1em;
 			font-weight: bold;
@@ -186,7 +190,7 @@ header("Content-type: text/css; charset=UTF-8");
 			text-indent: 0.45em;
 		}
 		
-		#lnee_<?php echo $suffix; ?> .newshead .calendar .day {	
+		<?php echo $suffix; ?> .newshead .calendar .day {	
 			font-size: 1.8em;
 			line-height: 1.1em;
 			font-weight: bold;
@@ -194,14 +198,14 @@ header("Content-type: text/css; charset=UTF-8");
 			text-indent: 0.1em;
 		}
 		
-		#lnee_<?php echo $suffix; ?> .newshead .calendar .year {
+		<?php echo $suffix; ?> .newshead .calendar .year {
 			font-size: 0.7em;
 			line-height: 1.2em;
 			letter-spacing: 0.35em;
 			text-indent: 0.35em;
 		}
 		
-		#lnee_<?php echo $suffix; ?> .newshead .calendar .time {
+		<?php echo $suffix; ?> .newshead .calendar .time {
 			font-size: 0.9em;
 			line-height: 1.2em;
 			letter-spacing: 0.1em;
