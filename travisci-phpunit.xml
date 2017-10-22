@@ -9,9 +9,9 @@
 	</php>
 
 	<testsuites>
-		<testsuite name="libraries-cms">
+		<!-- <testsuite name="libraries-cms">
 			<directory>tests/unit/suites/libraries/cms</directory>
-		</testsuite>
+		</testsuite> -->
 		<testsuite name="libraries-platform">
 			<directory>tests/unit/suites/libraries/joomla</directory>
 		</testsuite>
