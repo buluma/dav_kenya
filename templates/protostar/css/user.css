@@ -423,3 +423,24 @@ td.table-list {
     text-transform: none;
     color: rgb(99, 99, 99);
 }
+
+.nav-tabs>li>a {
+    color: #000 !important;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    height: 34px !important;
+    padding: 6px 12px !important;
+}
+
+textarea#jform_contact_message.required.form-control {
+    height: auto !important;
+}
+
+.cnRte p {
+    font-size: 16px;
+    color: #3e4757;
+    line-height: 22px;
+    margin: 0 !important;
+}

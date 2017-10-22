@@ -180,40 +180,53 @@ class ContactControllerContact extends JControllerForm
 			}
 
 			$mailfrom = $app->get('mailfrom');
-			$fromname = $app->get('fromname');
+			$fromname = $app->get('fromname'). ' Website Contact Us Enquiry';
 			$sitename = $app->get('sitename');
 
 			$name    = $data['contact_name'];
+			$phone    = $data['contact_phone'];
 			$email   = JStringPunycode::emailToPunycode($data['contact_email']);
 			$subject = $data['contact_subject'];
-			$body    = $data['contact_message'];
-
+			//$info = explode('|', $data['contact_department']);
+			//$receipient_email = $info[0];
+			//$department = $info[1];
+			$message    = $data['contact_message'];
+			$ip = $_SERVER['REMOTE_ADDR'];
+			$main_recepient = $contact->email_to;
+			$receipients = explode(',', $contact->email_others);
+			//$receipients[] = $receipient_email;
+			//add to datatase
+			$db = JFactory::getDBO();
+			$query = "INSERT INTO #__contact_enquiries (name, telephone, email, subject, message, date, ip) VALUES ('" .$name. "', '" .$phone. "', '" .$email. "', '" .$subject. "', '" .$message. "', NOW(), '" .$ip. "')";
+			$db->setQuery($query);
+			$db->query();
+			//end adding to database
 			// Prepare email body
 			$prefix = JText::sprintf('COM_CONTACT_ENQUIRY_TEXT', JUri::base());
-			$body   = $prefix . "\n" . $name . ' <' . $email . '>' . "\r\n\r\n" . stripslashes($body);
-
-			// Load the custom fields
-			if ($data['com_fields'] && $fields = FieldsHelper::getFields('com_contact.mail', $contact, true, $data['com_fields']))
-			{
-				$output = FieldsHelper::render(
-							'com_contact.mail',
-							'fields.render',
-							array('context' => 'com_contact.mail', 'item' => $contact, 'fields' => $fields)
-				);
-				if ($output)
-				{
-					$body  .= "\r\n\r\n" . $output;
-				}
-			}
+			$body = '<h2 style="font-family:arial;font-size:13px;padding:5px 0px;border-bottom:solid 1px #777">Contact enquiry</h2>';
+			$body .= '<p style="font-family:arial;font-size:12px">You\'ve received an enquiry via the contact us form. Please find the details below.</p>';
+			$body .= '<table border="1" cellpadding="4" style="border-collapse:collapse;font-family:arial;font-size:12px">';//end table
+			$body .= '<tr><td><strong>Name</strong></td><td>' .$name. '</td></tr>';//name
+			$body .= '<tr><td><strong>Phone number</strong></td><td>' .$phone. '</td></tr>';//Phone number
+			$body .= '<tr><td><strong>Email</strong></td><td>' .$email. '</td></tr>';//Email
+			$body .= '<tr><td><strong>Subject</strong></td><td>' .$subject. '</td></tr>';//Subject
+			$body .= '<tr><td colspan="2"><strong>Message</strong></td></tr>';//Message
+			$body .= '<tr><td colspan="2">' .stripslashes($message). '</td></tr>';//Message
+			$body .= '<tr><td><strong>IP</strong></td><td>' .$ip. '</td></tr>';//IP
+			$body .= '</table>';//start table
+			//$body	= $prefix . "\n" . $name . ' <' . $email . '>' . "\r\n\r\n" . stripslashes($body);
 
 			$mail = JFactory::getMailer();
-			$mail->addRecipient($contact->email_to);
-			$mail->addReplyTo($email, $name);
+			$mail->addRecipient($main_recepient);
+			for($i = 0; $i < count($receipients); $i++){
+				$mail->addCC($receipients[$i]);
+			}
+			$mail->addReplyTo(array($email, $name));
 			$mail->setSender(array($mailfrom, $fromname));
-			$mail->setSubject($sitename . ': ' . $subject);
+			$mail->setSubject($subject);
 			$mail->setBody($body);
+			$mail->isHTML(true);
 			$sent = $mail->Send();
-
 			// If we are supposed to copy the sender, do so.
 
 			// Check whether email copy function activated
@@ -225,7 +238,7 @@ class ContactControllerContact extends JControllerForm
 
 				$mail = JFactory::getMailer();
 				$mail->addRecipient($email);
-				$mail->addReplyTo($email, $name);
+				$mail->addReplyTo(array($email, $name));
 				$mail->setSender(array($mailfrom, $fromname));
 				$mail->setSubject($copysubject);
 				$mail->setBody($copytext);
