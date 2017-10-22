@@ -116,7 +116,7 @@ class JComponentRouterRulesMenuTest extends TestCaseDatabase
 				'featured' => '47',
 				'categories' => array(14 => '48'),
 				'category' => array (20 => '49'),
-				'article' => array(1 => '52')),
+				'article' => array(1 => '53')),
 			), $this->object->get('lookup')
 		);
 	}
