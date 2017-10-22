@@ -818,7 +818,7 @@ dl.article-info dd.hits span[class*=" icon-"] {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #fff;
+  color: #000;
   margin: 0;
 }
 .sp-megamenu-parent >li.sp-has-child>a:after,
@@ -2150,7 +2150,7 @@ ul.social-icons >li a {
   box-shadow: 0 0 5px rgba(0,0,0,0.2);
 }
 #sp-main-body {
-  padding: 0px 0;
+  padding: 100px 0;
 }
 .com-sppagebuilder #sp-main-body {
   padding: 0;
