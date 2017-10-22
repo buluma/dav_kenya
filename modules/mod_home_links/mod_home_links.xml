@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<extension type="module" version="3.1" client="site" method="upgrade">
+	<name>Home Links</name>
+	<author>Michael Buluma</author>
+	<version>3.0.0</version>
+	<creationDate>Sept 2017</creationDate>
+	<description>Home Links and images</description>
+	<files>
+		<filename>mod_home_links.xml</filename>
+		<filename module="mod_home">mod_home_links.php</filename>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<filename>tmpl/default.php</filename>
+		<filename>tmpl/index.html</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="firsttabtitle" type="text" label="First Row, Left Section Title" description="Title of left section"/>
+				<field name="firsttabimg" type="media" directory="images" label="First Tab Image" description="First Tab Image"/>
+				<field name="firsttablink" type="text" label="First Tab Link" description="First Tab Link"/>
+				<field name="firsttabdesc" type="editor" label="Tab Desc Field" description="" width="300" filter="safehtml" />
+
+				<field name="secondtabtitle" type="text" label="First Row, Right Section Title" description="Title of right section"/>
+				<field name="secondtabimg" type="media" directory="images" label="Second Tab Image" description="Second Tab Image"/>
+				<field name="secondtablink" type="text" label="Second Tab Link" description="Second Tab Link"/>
+				<field name="secondtabdesc" type="editor" label="Second Tab Desc Field" description="" width="300" filter="safehtml" />
+
+				<field name="thirdtabtitle" type="text" label="Second Row, Section A" description="Third Tab Title"/>
+				<field name="thirdtabimg" type="media" directory="images" label="Third Tab Image" description="Third Tab Image"/>
+				<field name="thirdtablink" type="text" label="Third Tab Link" description="Third Tab Link"/>
+				<field name="thirdtabdesc" type="editor" label="Third Tab Desc Field" description="" width="300" filter="safehtml" />
+
+				<field name="fourthtabtitle" type="text" label="Second Row, Section B" description="fourth Tab Title"/>
+				<field name="fourthtabimg" type="media" directory="images" label="fourth Tab Image" description="fourth Tab Image"/>
+				<field name="fourthtablink" type="text" label="fourth Tab Link" description="fourth Tab Link"/>
+				<field name="fourthtabdesc" type="editor" label="fourth Tab Desc Field" description="" width="300" filter="safehtml" />
+			</fieldset>
+			<fieldset name="advanced">
+				<field name="moduleclass_sfx" type="text" label="Module Class Suffix" description="Please enter Module Class Suffix"/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

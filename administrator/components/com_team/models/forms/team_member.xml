@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addfieldpath="/components/com_team/models/fields">
+
+       <field name="id" type="text" default="0" label="COM_TEAM_FORM_LBL_TEAM_MEMBER_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" />
+
+	   <field
+			name="facebook_username"
+			type="textfield"
+			label="COM_TEAM_TEAM_MEMBER_FACEBOOK_USERNAME_LBL"
+			description="COM_TEAM_TEAM_MEMBER_FACEBOOK_USERNAME_DESC"
+			default=""
+			/>
+
+		<field
+			name="twitter_handle"
+			type="textfield"
+			label="COM_TEAM_TEAM_MEMBER_TWITTER_HANDLE_LBL"
+			description="COM_TEAM_TEAM_MEMBER_TWITTER_HANDLE_DESC"
+			default=""
+			/>
+
+		<field
+			name="email"
+			type="textfield"
+			label="COM_TEAM_TEAM_MEMBER_EMAIL_LBL"
+			description="COM_TEAM_TEAM_MEMBER_EMAIL_DESC"
+			required="true"
+			default=""
+			/>
+
+		<field
+			name="photo"
+			type="media"
+			label="COM_TEAM_TEAM_MEMBER_PHOTO_LBL"
+			description="COM_TEAM_TEAM_MEMBER_PHOTO_DESC"
+			default=""
+			/>
+
+		<field
+			name="position"
+			type="textfield"
+			label="COM_TEAM_TEAM_MEMBER_POSITION_LBL"
+			description="COM_TEAM_TEAM_MEMBER_POSITION_DESC"
+			required="true"
+			default=""
+			/>
+
+			<field
+				name="profile"
+				type="editor"
+				label="profile"
+				description="profile"
+				filter="JComponentHelper::filterText"
+				buttons="false"
+				hide="readmore,pagebreak"
+				/>
+
+		<field
+			name="name"
+			type="textfield"
+			label="COM_TEAM_TEAM_MEMBER_NAME_LBL"
+			description="COM_TEAM_TEAM_MEMBER_NAME_DESC"
+			required="true"
+			default=""
+			/>
+
+		<field
+			name="created_by"
+			type="createdby"
+			label="COM_TEAM_TEAM_MEMBER_CREATED_BY_LBL"
+			description="COM_TEAM_TEAM_MEMBER_CREATED_BY_DESC"
+			default=""
+			/>
+
+		<field
+			class="inputbox"
+			size="1"
+			name="state"
+			type="list"
+			label="COM_TEAM_TEAM_MEMBER_STATE_LBL"
+			description="COM_TEAM_TEAM_MEMBER_STATE_DESC"
+			default="1"
+			>
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+
+		<field
+			name="ordering"
+			type="hidden"
+			label="COM_TEAM_TEAM_MEMBER_ORDERING_LBL"
+			description="COM_TEAM_TEAM_MEMBER_ORDERING_DESC"
+			default=""
+			/>
+
+	</fieldset>
+</form>

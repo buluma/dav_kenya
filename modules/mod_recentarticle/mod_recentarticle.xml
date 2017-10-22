@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.3" client="site" method="upgrade">
+	<name>Recent Article</name>
+	<author>Bilal Kabeer Butt</author>
+	<creationDate>19-12-2012</creationDate>
+	<copyright>All rights reserved by GegaByte.</copyright>
+	<license>GPL 2.0</license>
+	<authorEmail>info@gegabyte.org</authorEmail>
+	<authorUrl>www.gegabyte.org</authorUrl>
+	<version>2.0</version>
+	<description>Shows the recent article from the selected category</description>
+	<!-- Listing of all files that should be installed for the module to function -->
+	<files>
+		<!-- The "module" attribute signifies that this is the main controller file -->
+		<filename module="mod_recentarticle">mod_recentarticle.php</filename>
+		<filename>index.html</filename>
+		<filename>helper.php</filename>
+		<filename>tmpl/default.php</filename>
+		<filename>tmpl/index.html</filename>
+	</files>
+	
+	<updateservers>
+		<server type="extension" name="Recent Article" priority="1">http://www.gegabyte.org/joomla_extension_updates/recentarticle.xml</server>
+	</updateservers>
+	
+	<scriptfile>script.php</scriptfile>
+	
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="catid" type="category" extension="com_content" label="Select a category" description="Category ID to show articles from" />
+				<field name="article_title" type="radio" default="0" label="Show Title" description="Show Title of article" class="btn-group btn-group-yesno">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="article_length" type="text" default="50" label="Article Length" description="Length of the article to show in character" size="10" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

@@ -1,0 +1,12 @@
+.icon-team_members {
+	background-image: url(../images/view-16x16-team_members.png);
+}
+
+.icon-48-team_members {
+	background-image: url(../images/view-48x48-team_members.png);
+}
+
+.list-media {
+      max-width: 100px;
+      max-height: 100px;
+}

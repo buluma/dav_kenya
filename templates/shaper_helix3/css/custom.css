@@ -1,0 +1,209 @@
+#sp-header {
+    background: #E67817 none repeat scroll 0 0 !important;
+}
+
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.no-gutters>[class^="col-"], .no-gutters>[class*=" col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+div.col-md-6.no-gutters {
+    background: #e67817;
+}
+
+div.col-md-6.text-box, div.col-md-6.text-box a{
+	color: #fff;
+	padding: 10px;
+}
+
+div#sp-footer1 .sp-copyright{
+	float: left;
+}
+
+ul.social-icons{
+	float: right;
+}
+
+.sp-megamenu-parent >li.active>a, .sp-megamenu-parent >li:hover>a {
+    color: #00923f !important;
+}
+
+li.sp-contact-email a, li.sp-contact-phone a{
+  color: #fff;
+}
+
+.sp-page-builder .page-content #services .sppb-section-title .sppb-title-heading, .sp-page-builder .page-content #team .sppb-section-title .sppb-title-heading {
+    font-size: 68px;
+    font-weight: bold;
+    color: rgba(207, 207, 207, 0.34) !important;
+}
+
+.sp-page-builder .page-content #services .sppb-section-title .sppb-title-subheading, #sp-page-builder .sppb-section-title.sppb-text-center .sppb-title-subheading {
+    font-size: 26px;
+    position: relative;
+    top: -35px;
+    font-weight: bold;
+}
+
+.lnee .head_right .catlink, .lnee .head_right .link, .lnee .head_right .newsextra, .lnee .head_right .newsintro, .lnee .head_right .newstitle {
+    text-align: left !important; 
+}
+
+#lnee_110 .head_right .newshead {
+    float: none !important;
+    }
+
+    #sp-page-builder .sppb-section-title {
+     margin-bottom: 0px !important;
+   }
+
+
+/*team css*/
+.content-body .content-body__h1 {
+    font-size: 28px;
+    color: #219a3f;
+    line-height: 1.125;
+    border-bottom: 1px solid #219a3f;
+    padding-bottom: 10px;
+    margin: 15px 0;
+}
+
+.content-body__inner, .single_press_aritcle {
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.6666666667;
+    -webkit-font-smoothing: antialiased;
+}
+
+.content-body__container {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+}
+
+.content-body__inner p, .single_press_aritcle p {
+    font-size: 13px;
+    margin-top: 14px;
+    margin-bottom: 15px;
+    line-height: 1.6666666667;
+    -webkit-font-smoothing: antialiased;
+}
+
+.content-body__inner h2, .single_press_aritcle h2 {
+    font-size: 20px !important;
+    margin-bottom: 10px;
+}
+
+.content-body__team ul {
+    list-style: none;
+    margin: 0 !important;
+}
+
+.content-body__team .pane-list {
+    margin-bottom: 25px;
+}
+
+.pane-list {
+    margin: 0;
+        margin-bottom: 0px;
+    margin-bottom: 50px;
+    list-style: none;
+}
+.large-4 {
+    width: 33.33333%;
+}
+
+.large-3 {
+    width: 25%;
+}
+
+.column, .columns {
+    position: relative;
+    padding-left: 0.9375em;
+    padding-right: 0.9375em;
+    float: left;
+}
+
+.content-body__team .tema-list__item {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+.pane-list .pane-block {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    border-bottom: 1px hidden #fff;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+}
+
+
+
+.content-body__team .pane-block__image {
+    height: 245px;
+}
+
+.content-body__team .tema-list__item {
+    cursor: pointer;
+}
+
+.content-body__team .image-pane {
+    width: auto;
+    max-width: 86%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 768px){ 
+.sppb-row-container {
+    width: 1070px !important;
+}
+}
+
+.content-body__team .item-block__meta {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #fff;
+    padding: 20px 12px;
+    height: 88px;
+    overflow: hidden;
+    border-top: 1px solid #ccc;
+        border-top-color: rgb(204, 204, 204);
+    border-color: rgba(0,0,0,0.1);
+}
+
+.content-body__team .item-block__meta h3 {
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.content-body__team .meta-content__cta {
+    margin-top: 5px;
+}
+
+.hide-item {
+    display: none;
+}
+
+/*end team*/
+div#Section.Section--employees{
+    margin-top: 50px;
+}
+
+div.item-page{
+    width: 87%;
+    margin: 0 auto;
+}
