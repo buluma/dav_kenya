@@ -381,3 +381,45 @@ ul.nav.menu{
     width: 87%;
     margin: 0 auto;
 }
+
+
+/* loans */
+table.services {
+    text-align: left;
+}
+
+td.heading {
+    font-size: 16px;
+    text-transform: uppercase;
+    padding: 15px 15px;
+    background: #333;
+    margin: -10px 0 1px 0;
+    color: #FFFFFF;
+}
+
+td.sub_heading {
+    font-size: 13px;
+    text-transform: none;
+    padding: 15px 15px;
+    background: rgba(158, 158, 158, 0.23);
+    margin: -10px 0 1px 0;
+    color: #333;
+    line-height: normal;
+}
+
+td.f_features {
+    background: #00703D;
+    font-size: 14px;
+    vertical-align: middle;
+    padding: 15px 15px;
+    color: #FFFFFF;
+}
+
+td.table-list {
+    padding: 10px 15px;
+    border: 1px solid #d8d8d8;
+    font-size: 13px;
+    list-style-type: none;
+    text-transform: none;
+    color: rgb(99, 99, 99);
+}
