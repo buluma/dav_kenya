@@ -34,6 +34,8 @@ class Parser
     private $locallySkippedLineNumbers = array();
 
     /**
+     * Constructor.
+     *
      * @param int      $offset             The offset of YAML document (used for line numbers in error messages)
      * @param int|null $totalNumberOfLines The overall number of lines being parsed
      * @param int[]    $skippedLineNumbers Number of comment lines that have been skipped by the parser
@@ -181,7 +183,7 @@ class Parser
                     $key = (string) $key;
                 }
 
-                if ('<<' === $key && (!isset($values['value']) || !self::preg_match('#^&(?P<ref>[^ ]+)#u', $values['value'], $refMatches))) {
+                if ('<<' === $key) {
                     $mergeNode = true;
                     $allowOverwrite = true;
                     if (isset($values['value']) && 0 === strpos($values['value'], '*')) {
@@ -198,7 +200,7 @@ class Parser
 
                         $data += $refValue; // array union
                     } else {
-                        if (isset($values['value']) && '' !== $values['value']) {
+                        if (isset($values['value']) && $values['value'] !== '') {
                             $value = $values['value'];
                         } else {
                             $value = $this->getNextEmbedBlock();
@@ -226,14 +228,14 @@ class Parser
                             $data += $parsed; // array union
                         }
                     }
-                } elseif ('<<' !== $key && isset($values['value']) && self::preg_match('#^&(?P<ref>[^ ]+) *(?P<value>.*)#u', $values['value'], $matches)) {
+                } elseif (isset($values['value']) && self::preg_match('#^&(?P<ref>[^ ]+) *(?P<value>.*)#u', $values['value'], $matches)) {
                     $isRef = $matches['ref'];
                     $values['value'] = $matches['value'];
                 }
 
                 if ($mergeNode) {
                     // Merge keys
-                } elseif (!isset($values['value']) || '' == trim($values['value'], ' ') || 0 === strpos(ltrim($values['value'], ' '), '#') || '<<' === $key) {
+                } elseif (!isset($values['value']) || '' == trim($values['value'], ' ') || 0 === strpos(ltrim($values['value'], ' '), '#')) {
                     // hash
                     // if next line is less indented or equal, then it means that the current value is null
                     if (!$this->isNextLineIndented() && !$this->isNextLineUnIndentedCollection()) {
@@ -244,13 +246,9 @@ class Parser
                         }
                     } else {
                         $value = $this->parseBlock($this->getRealCurrentLineNb() + 1, $this->getNextEmbedBlock(), $exceptionOnInvalidType, $objectSupport, $objectForMap);
-
-                        if ('<<' === $key) {
-                            $this->refs[$refMatches['ref']] = $value;
-                            $data += $value;
-                        } elseif ($allowOverwrite || !isset($data[$key])) {
-                            // Spec: Keys MUST be unique; first one wins.
-                            // But overwriting is allowed when a merge node is used in current block.
+                        // Spec: Keys MUST be unique; first one wins.
+                        // But overwriting is allowed when a merge node is used in current block.
+                        if ($allowOverwrite || !isset($data[$key])) {
                             $data[$key] = $value;
                         }
                     }
@@ -414,7 +412,7 @@ class Parser
             $indent = $this->getCurrentLineIndentation();
 
             // terminate all block scalars that are more indented than the current line
-            if (!empty($blockScalarIndentations) && $indent < $previousLineIndentation && '' !== trim($this->currentLine)) {
+            if (!empty($blockScalarIndentations) && $indent < $previousLineIndentation && trim($this->currentLine) !== '') {
                 foreach ($blockScalarIndentations as $key => $blockScalarIndentation) {
                     if ($blockScalarIndentation >= $this->getCurrentLineIndentation()) {
                         unset($blockScalarIndentations[$key]);
@@ -717,7 +715,7 @@ class Parser
         //checking explicitly the first char of the trim is faster than loops or strpos
         $ltrimmedLine = ltrim($this->currentLine, ' ');
 
-        return '' !== $ltrimmedLine && '#' === $ltrimmedLine[0];
+        return '' !== $ltrimmedLine && $ltrimmedLine[0] === '#';
     }
 
     private function isCurrentLineLastLineInDocument()
@@ -743,7 +741,7 @@ class Parser
 
         // remove leading comments
         $trimmedValue = preg_replace('#^(\#.*?\n)+#s', '', $value, -1, $count);
-        if (1 == $count) {
+        if ($count == 1) {
             // items have been removed, update the offset
             $this->offset += substr_count($value, "\n") - substr_count($trimmedValue, "\n");
             $value = $trimmedValue;
@@ -751,7 +749,7 @@ class Parser
 
         // remove start of the document marker (---)
         $trimmedValue = preg_replace('#^\-\-\-.*?\n#s', '', $value, -1, $count);
-        if (1 == $count) {
+        if ($count == 1) {
             // items have been removed, update the offset
             $this->offset += substr_count($value, "\n") - substr_count($trimmedValue, "\n");
             $value = $trimmedValue;
