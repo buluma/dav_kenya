@@ -207,3 +207,7 @@ div.item-page{
     width: 87%;
     margin: 0 auto;
 }
+
+.h3, h3 {
+    font-size: 21px !important;
+}

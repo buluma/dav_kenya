@@ -57,7 +57,7 @@ $needJModal = false;
 			?>
 				<?php if ($params->get('usecaption', '1')) { ?>
 				<div class="camera_caption <?php echo $params->get('captioneffect', 'moveFromBottom')?>">
-					<div class="camera_caption_title">
+					<div class="camera_caption_title sppb-row-container">
 						<?php if ($link && $linkposition == 'title') {
 							echo $startLink . str_replace("|dq|", "\"", $item->imgtitle) . '</a>';
 						} else {
@@ -74,7 +74,7 @@ $needJModal = false;
 						?>
 					</div>
 					<?php if ($params->get('usecaptiondesc', '1')) { ?>
-					<div class="camera_caption_desc">
+					<div class="camera_caption_desc sppb-row-container">
 						<?php echo str_replace("|dq|", "\"", $item->imgcaption); ?>
 						<?php
 						if ($item->article) {

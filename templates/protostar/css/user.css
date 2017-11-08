@@ -451,3 +451,31 @@ textarea#jform_contact_message.required.form-control {
     padding-bottom: 10px;
     margin: 15px 0;
 }
+
+.col-md-6.text-box h3 {
+    font-size: 21px !important;
+}
+
+.camera_caption {
+    top: 20% !important;
+    }
+
+    .camera_caption > div {
+    background: none !important;
+}
+
+.camera_caption > div {
+    padding: 30px 20px !important;
+}
+
+#camera_wrap_114 .camera_caption > div div.camera_caption_title {
+    font-size: 12px;
+        color: #f88039;
+    padding-bottom: 31px;
+}
+
+#camera_wrap_114 .camera_caption > div div.camera_caption_desc {
+    font-size: 20px;
+    color: green !important;
+    box-shadow: beige;
+}
