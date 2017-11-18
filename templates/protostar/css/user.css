@@ -455,7 +455,7 @@ textarea#jform_contact_message.required.form-control {
 .col-md-6.text-box h3 {
     font-size: 21px !important;
 }
-
+/*
 .camera_caption {
     top: 20% !important;
     }
@@ -478,4 +478,8 @@ textarea#jform_contact_message.required.form-control {
     font-size: 20px;
     color: green !important;
     box-shadow: beige;
+}*/
+
+.camera_wrap .camera_pag .camera_pag_ul {
+    text-align: center !important;
 }

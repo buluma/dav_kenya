@@ -1,55 +1,13 @@
-# IDE & System Related Files #
-.buildpath
-.project
-.settings
-.DS_Store
-.idea
-
-# Local System Files (i.e. cache, logs, etc.) #
-/administrator/cache
-/administrator/logs
+# Add any directories, files, or patterns you don't want to be tracked by version control
+configuration.php
+error_log
+/vender/
+/tests/
+/import-database-sql-file-using-PHP-script-master/
 /cache
-/tmp
-/configuration.php
-/.htaccess
-/web.config
-
-# Test Related Files #
-/tests/system/webdriver/tests/logs/
-/tests/system/servers/configdef.php
-codecept.phar
-tests/codeception/_output/*
-tests/codeception/vendor/*
-tests/codeception/testingsite*
-tests/codeception/tests/acceptance.suite.yml
-tests/codeception/tests/acceptance/*Tester.php
-tests/codeception/tests/functional/*Tester.php
-tests/codeception/tests/unit/*Tester.php
-
-# phpDocumentor Logs #
-phpdoc-*
-
-# Patch Tester #
-/administrator/components/com_patchtester
-/administrator/templates/hathor/html/com_patchtester
-/components/com_patchtester
-/media/com_patchtester
-
-# Install from Web plugin #
-/plugins/installer/webinstaller
-
-# OSX #
-._*
-.Spotlight-V100
-.Trashes
-
-# Windows #
-Thumbs.db
-Desktop.ini
-
-# Never ignore #
-# Only apply this rule to the main repository's gitignore files
-!/.gitignore
-!/build/.gitignore
-!/tests/unit/suites/libraries/joomla/archive/.gitignore
-!/tests/unit/tmp/.gitignore
+/logs
+/db_dump/filename[0-9].sql
+**/cache
+*.cache
+*.zip
+*.errors.php

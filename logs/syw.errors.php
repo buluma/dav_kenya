@@ -5,3 +5,4 @@
 
 #Fields: datetime	priority clientip	category	message
 2017-10-22T11:10:25+00:00	ERROR ::1	syw	modLatestNewsEnhancedHelper:clearThumbnails() - Error on glob - No permission on files/folder or old system
+2017-11-18T08:56:56+00:00	ERROR ::1	syw	modLatestNewsEnhancedHelper:clearThumbnails() - Error on glob - No permission on files/folder or old system
