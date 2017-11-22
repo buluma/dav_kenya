@@ -77,12 +77,12 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                         <div class="modal-body">
                           <?php //var_dump($item); ?>
                           <div class="row">
-                             <div class="col-md-6">
+                             <div class="col-md-4">
                                <img src="<?php echo $item->photo; ?>" alt="Dan Nyitrai" width="188" height="188" class="is-loaded center-block">
                                <br />
                                <h4 class="text-center"><?php echo $item->position;?></h4>
                              </div>
-                             <div class="col-md-6 pull-right">
+                             <div class="col-md-8 pull-right">
                                <?php 
                                if (!empty($item->profile)){
                                echo $item->profile;
