@@ -183,7 +183,7 @@ li.sp-contact-email a, li.sp-contact-phone a{
 }
 
 .content-body__team .pane-block__image {
-    height: 325px;
+    height: 350px;
 }
 
 .content-body__team .tema-list__item {
@@ -209,7 +209,7 @@ li.sp-contact-email a, li.sp-contact-phone a{
     bottom: 0;
     width: 100%;
     background: #fff;
-    padding: 20px 12px;
+    padding: 20px 12px 80px;
     height: 88px;
     overflow: hidden;
     border-top: 1px solid #ccc;
