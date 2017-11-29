@@ -483,3 +483,8 @@ textarea#jform_contact_message.required.form-control {
 .camera_wrap .camera_pag .camera_pag_ul {
     text-align: center !important;
 }
+
+
+.modal-body{
+    overflow: auto !important;
+}
