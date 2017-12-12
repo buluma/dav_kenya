@@ -1,5 +1,5 @@
 # Forces new Travis-CI Infrastructure
-sudo: false
+#sudo: false
 
 language: php
 
