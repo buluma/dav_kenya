@@ -3,7 +3,7 @@ DAV Kenya CMS™
 
 Build Status
 ---------------------
-Travis-CI: [![Build Status](https://travis-ci.org/buluma/dav-kenya.svg?branch=master)](https://travis-ci.org/buluma/dav-kenya)
+[![Build Status](https://travis-ci.com/buluma/dav_kenya.svg?branch=master)](https://travis-ci.com/buluma/dav_kenya)
 
 What is this?
 ---------------------
