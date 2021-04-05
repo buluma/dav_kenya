@@ -1,4 +1,4 @@
-DAV Kenya Joomla CMS™
+DAV Kenya CMS™
 ====================
 
 Build Status
